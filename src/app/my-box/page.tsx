@@ -1,14 +1,93 @@
+"use client";
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
 import { NavigationSidebar } from '../components/navigation/navigation-sidebar';
+
 const MyBox = () => {  
-  // const [dataList, setDataList] = useState([]);
-  const dataList = [
-    { name: "A", owner: "太郎", dataInfo: "2013/05/30" },
-    { name: "B", owner: "花子", dataInfo: "2020/10/15" },
-    { name: "C", owner: "次郎", dataInfo: "2019/03/22" },
-    { name: "D", owner: "三郎", dataInfo: "2021/07/08" },
-    { name: "E", owner: "四郎", dataInfo: "2018/12/01" },
-  ];
+  const root = {
+    "name": "Root",
+    "owner": "0x123...576",
+    "creation_date": "",
+    "location": "",
+    "parent": { "name": "", "location": "" },
+    "child": [
+        { "name": "File1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
+        { "name": "File2", "isFile": true, "creation_date": "2023-10-09","location": "file2.location" },
+        { "name": "Folder1", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
+        { "name": "Folder2", "isFile": false, "creation_date": "2002-01-04","location": "folder2.location" },
+    ]
+  };
+  // const getRoot = () => {
+  //   // get root関数
+  // }
+  // const getDateList = () => {
+  //   setDateList(root.child)
+  // }
+
+  // const [date, setDate] = useState(root.child)
+  const [date, setDate] = useState(root);
+  const [dataList, setDataList] = useState(root.child);
+  const [owner, setOwner] = useState("0x253...354");
+
+  // / My Boxを初期状態にリセットする関数
+  const resetMyBox = () => {
+    // 初期データまたはAPIからデータを再取得して、setDataListでセットする
+    setDataList(root.child);
+  }
+  
+  const getDate = (location: string) => {
+    const childDate = {
+          "name": "Folder1",
+          "creation_date": "2023-09-09",
+          "location": "folder1_uri",
+          "parent": { "name": "parent.name", "location": "parent.location" },
+          "child": [
+            { "name": "A", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
+            { "name": "B", "isFile": false, "creation_date": "2023-10-09","location": "file2.location" },
+            { "name": "C", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
+          ]
+        }
+        setDataList(childDate.child);
+    };
+
+  const handleDelete = (location: string) => {
+    // delete処理
+  }
+
+  const handleDownload = (location: string) => {
+    // download処理
+  }
+  
+
+  // const dataList = [
+  //   {
+  //     "name": "Folder1",
+  //     "creation_date": "2023-09-09",
+  //     "location": "folder1_uri",
+  //     "parent": { "name": "parent.name", "location": "parent.location" },
+  //     "child": [
+  //         { "name": "File1", "isFile": true, "location": "file1.location" },
+  //         { "name": "File2", "isFile": true, "location": "file2.location" },
+  //         { "name": "Folder2", "isFile": false, "location": "folder2.location" }
+  //     ]
+  //   },
+  //   {
+  //     "name": "Folder2",
+  //     "creation_date": "2023-09-09",
+  //     "location": "folder1_uri",
+  //     "parent": { "name": "parent.name", "location": "parent.location" },
+  //     "child": [
+  //         { "name": "File1", "isFile": true, "location": "file1.location" },
+  //         { "name": "File2", "isFile": true, "location": "file2.location" },
+  //         { "name": "Folder2", "isFile": false, "location": "folder2.location" }
+  //     ]
+  //   }
+  // ];
+
+
+
+  
 
 
   // useEffect(() => {
@@ -17,7 +96,7 @@ const MyBox = () => {
   return (
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar />
+        <NavigationSidebar resetMyBox={resetMyBox}/>
       </div>
       <div>
         <h1 className="text-4xl font-bold text-center">Own Space</h1>
@@ -25,6 +104,7 @@ const MyBox = () => {
         <table className="table-auto">
           <thead>
             <tr>
+              <th className="px-4 py-2">Data</th>
               <th className="px-4 py-2">Name</th>
               <th className="px-4 py-2">Owner</th>
               <th className="px-4 py-2">Data Info</th>
@@ -34,10 +114,57 @@ const MyBox = () => {
           <tbody>
             {dataList.map((item, index) => (
               <tr key={index}>
-                <td className="border px-4 py-2">{item.name}</td>
-                <td className="border px-4 py-2">{item.owner}</td>
-                <td className="border px-4 py-2">{item.dataInfo}</td>
-                <td className="border px-4 py-2">{/* アクションボタンなどを追加 */}</td>
+                <td className="border px-4 py-2">
+                  {item.isFile ? (
+                    <Image src="/file.png" alt="file" width={30} height={30}/>
+                    ) : (
+                    <Image src="/folder.png" alt="folder" width={30} height={30} onClick={() => getDate(item.location)}/>
+                      )}    
+                </td>
+                {item.isFile ? (
+                  <td className="border px-4 py-2">{item.name}</td>
+                    ) : (
+                  <td className="border px-4 py-2" onClick={() => getDate(item.location)}>{item.name}</td>
+                )}   
+                <td className="border px-4 py-2">{date.owner}</td>
+                <td className="border px-4 py-2">{item.creation_date}</td>
+                <td className="border px-4 py-2 flex">
+                  {item.isFile ? (
+                    <>
+                      <Image
+                        src="/download.png"
+                        alt="Download"
+                        width={30}
+                        height={30}
+                        onClick={() => handleDownload(item.location)}
+                      />
+                      <Image
+                        src="/delete.png"
+                        alt="Delete"
+                        width={30}
+                        height={30}
+                        onClick={() => handleDelete(item.location)}
+                      />
+                    </>
+                  ) : (
+<>
+                      <Image
+                        src="/download.png"
+                        alt="Download"
+                        width={30}
+                        height={30}
+                        onClick={() => handleDownload(item.location)}
+                      />
+                      <Image
+                        src="/delete.png"
+                        alt="Delete"
+                        width={30}
+                        height={30}
+                        onClick={() => handleDelete(item.location)}
+                      />
+                    </>
+                  )}
+                </td>  
               </tr>
             ))}
           </tbody>
