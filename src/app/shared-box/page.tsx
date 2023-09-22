@@ -2,7 +2,7 @@ import { NavigationSidebar } from "../components/navigation/navigation-sidebar";
 
 const SharedBox = () => {
   const dataList = [
-    { name: "A", owner: "太郎", dataModified: "2013/05/30" },
+    { name: "AAAA", owner: "太郎", dataModified: "2013/05/30" },
     { name: "B", owner: "花子", dataModified: "2020/10/15" },
     { name: "C", owner: "次郎", dataModified: "2019/03/22" },
     { name: "D", owner: "三郎", dataModified: "2021/07/08" },
