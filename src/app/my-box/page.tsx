@@ -12,8 +12,8 @@ const MyBox = () => {
     "location": "",
     "parent": { "name": "", "location": "" },
     "child": [
-        { "name": "File1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
-        { "name": "File2", "isFile": true, "creation_date": "2023-10-09","location": "file2.location" },
+        { "name": "FileA1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
+        { "name": "FileB2", "isFile": true, "creation_date": "2023-10-09","location": "file2.location" },
         { "name": "Folder1", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
         { "name": "Folder2", "isFile": false, "creation_date": "2002-01-04","location": "folder2.location" },
     ]
