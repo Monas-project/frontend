@@ -1,10 +1,10 @@
-import { NavigationSidebar } from "../components/navigation/navigation-sidebar";
+import { NavigationSidebar } from "../../components/navigation/navigation-sidebar";
 
 const GetBox = () => {
   return (
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar />
+        <NavigationSidebar resetMyBox={() => {}} />
       </div>
       <div>
         <h1 className="text-4xl font-bold text-center">Get Box</h1>

@@ -1,4 +1,4 @@
-import { NavigationSidebar } from "../components/navigation/navigation-sidebar";
+import { NavigationSidebar } from "../../components/navigation/navigation-sidebar";
 
 const SharedBox = () => {
   const dataList = [
@@ -11,7 +11,7 @@ const SharedBox = () => {
   return (
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar />
+        <NavigationSidebar resetMyBox={() => {}} />
       </div>
       <div>
         <h1 className="text-4xl font-bold text-center">Shared Space</h1>

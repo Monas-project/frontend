@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image';
 import { useState } from 'react';
-import { NavigationSidebar } from '../../components/navigation/navigation-sidebar';
+import { NavigationSidebar } from '../../../components/navigation/navigation-sidebar';
 
-const MyBox = () => {  
+const Folder = (props) => {  
+    console.log(props);
   const router = useRouter();
   const searchParams = useSearchParams()
-  const cid = searchParams.get('cid');
   const root = {
     "name": "Root",
     "owner": "0x123...576",
@@ -40,26 +40,13 @@ const MyBox = () => {
     setDataList(root.child);
   }
   
-  const getDate = (testFolderId: string) => {
+    const getDate = (testFolderId: string) => {
 
-    const folderId = "38745683465";
+        const folderId = "38745683465";
+        
+        router.push(`/my-box/${folderId}`);
+      }
     
-    router.push(`/my-box/${folderId}`);
-  }
-   
-    // const childDate = {
-    //       "name": "Folder1",
-    //       "creation_date": "2023-09-09",
-    //       "location": "folder1_uri",
-    //       "parent": { "name": "parent.name", "location": "parent.location" },
-    //       "child": [
-    //         { "name": "A", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
-    //         { "name": "B", "isFile": false, "creation_date": "2023-10-09","location": "file2.location" },
-    //         { "name": "C", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
-    //       ]
-    //     }
-    //     setDataList(childDate.child);
-    // };
 
   const handleDelete = (location: string) => {
     // delete処理
@@ -183,4 +170,4 @@ const MyBox = () => {
     </div>
   )     
 };
-export default MyBox;
+export default Folder;
