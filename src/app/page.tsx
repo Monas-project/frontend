@@ -1,9 +1,10 @@
 "use client";
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { signup } from "../utils/api/signup";
 import { login } from "../utils/api/login";
+// import { useData, DataProvider } from "@/context/metaData";
 
 
 export default function Home() {
@@ -52,6 +53,7 @@ export default function Home() {
   const [rootId, setRootId] = useState('');
   const [rootKey, setRootKey] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
 
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
@@ -82,6 +84,7 @@ export default function Home() {
 
 
   return (
+    // <DataProvider>
     <div className="bg-gray-900 h-screen flex flex-col justify-center items-center text-white font-semibold">
   <h1 className="text-6xl mb-8">Monas</h1>
   <p className="text-2xl mb-12 text-center">
@@ -136,6 +139,7 @@ export default function Home() {
     </form>
   </div>
 </div>
+// </DataProvider>
 
   );
 }

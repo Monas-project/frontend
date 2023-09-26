@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { NavigationSidebar } from '../../components/navigation/navigation-sidebar';
 import Files from "@/components/Files";
+// import { useData, DataProvider } from "@/context/metaData";
 
 const MyBox = () => {  
   const router = useRouter();
@@ -128,10 +129,10 @@ const MyBox = () => {
 
 
   // / My Boxを初期状態にリセットする関数
-  const resetMyBox = () => {
-    // 初期データまたはAPIからデータを再取得して、setDataListでセットする
-    setDataList(root.child);
-  }
+  // const resetMyBox = () => {
+  //   // 初期データまたはAPIからデータを再取得して、setDataListでセットする
+  //   setDataList(root.child);
+  // }
   
   const getDate = (testFolderId: string) => {
 
@@ -157,9 +158,10 @@ const MyBox = () => {
   };
   
   return (
+    // <DataProvider>
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar resetMyBox={resetMyBox}/>
+        <NavigationSidebar />
       </div>
       <div>
       
@@ -291,6 +293,7 @@ const MyBox = () => {
         </div>
       )}
     </div>
+    // </DataProvider>
   )     
 };
 export default MyBox;

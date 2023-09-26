@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image';
 import { useState } from 'react';
-import { NavigationSidebar } from '../../../components/navigation/navigation-sidebar';
+import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
+// import { useData, DataProvider } from "@/context/metaData";
 
 const Folder = (props: any) => {  
     console.log(props);
@@ -35,10 +36,10 @@ const Folder = (props: any) => {
   const [owner, setOwner] = useState("0x253...354");
 
   // / My Boxを初期状態にリセットする関数
-  const resetMyBox = () => {
-    // 初期データまたはAPIからデータを再取得して、setDataListでセットする
-    setDataList(root.child);
-  }
+//   const resetMyBox = () => {
+//     // 初期データまたはAPIからデータを再取得して、setDataListでセットする
+//     setDataList(root.child);
+//   }
   
     const getDate = (testFolderId: string) => {
 
@@ -91,9 +92,10 @@ const Folder = (props: any) => {
   //   // フォルダとファイルのデータをAPIから取得し、setDataListでセットする
   // }, []);
   return (
+    // <DataProvider>
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar resetMyBox={resetMyBox}/>
+        <NavigationSidebar />
       </div>
       <div>
         <h1 className="text-4xl font-bold text-center">Own Space</h1>
@@ -168,6 +170,7 @@ const Folder = (props: any) => {
         </table>
       </div>
     </div>
+    // </DataProvider>
   )     
 };
 export default Folder;

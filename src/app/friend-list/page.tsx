@@ -11,7 +11,7 @@ const FriendList = () => {
   return (
     <div className='flex h-screen'>
       <div>
-        <NavigationSidebar resetMyBox={() => {}} />
+        <NavigationSidebar />
 
 
       </div>
