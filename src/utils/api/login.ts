@@ -18,7 +18,9 @@ export const login = async (rootId: string, rootKey: string) => {
   };
   const body = JSON.stringify(req);
   console.log("login body: ", body)
-  const res = await fetch(ENDPOINT, { method: "POST", body });
+  const res = await fetch(ENDPOINT, { method: "POST", headers: {
+    'Content-Type': 'application/json'
+  }, body: body });
 
   // ストリームからデータを読み取る
   const responseBody = await res.json(); // もしくは await res.json() など、適切なメソッドを使用
@@ -26,9 +28,9 @@ export const login = async (rootId: string, rootKey: string) => {
   
   // エスケープを解除し、JSON形式のデータとして解釈する
   try {
-    const decodedBody = JSON.parse(responseBody.replace(/\\\"/g, '"')); // エスケープを解除
-    console.log("Decoded response body", decodedBody);
-    return decodedBody as loginAPIRes;
+    // const decodedBody = JSON.parse(responseBody.replace(/\\\"/g, '"')); // エスケープを解除
+    // console.log("Decoded response body", responseBody);
+    return responseBody as loginAPIRes;
   } catch (error) {
     // パースに失敗した場合のエラーハンドリング
     console.error("Failed to parse JSON response:", error);

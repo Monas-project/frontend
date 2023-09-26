@@ -71,9 +71,9 @@ export default function Home() {
     // ログイン処理を実行
     try {
       const data: any = await login(rootId, rootKey);
-      console.log("data", data);
+      console.log("metadata", data.metadata);
       setIsLoggedIn(true);
-        // router.push(`/my-box?cid=${rootId}`);
+      router.push(`/my-box?cid=${rootId}`);
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -85,7 +85,7 @@ export default function Home() {
     <div className="bg-gray-900 h-screen flex flex-col justify-center items-center text-white font-semibold">
   <h1 className="text-6xl mb-8">Monas</h1>
   <p className="text-2xl mb-12 text-center">
-    Let's connect to the next generation data store.<br />
+    Lets connect to the next generation data store.<br />
     Enjoy it!
   </p>
   <button

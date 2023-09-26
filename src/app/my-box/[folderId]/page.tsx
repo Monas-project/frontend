@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { NavigationSidebar } from '../../../components/navigation/navigation-sidebar';
 
-const Folder = (props) => {  
+const Folder = (props: any) => {  
     console.log(props);
   const router = useRouter();
   const searchParams = useSearchParams()
