@@ -34,10 +34,10 @@ export default function Home() {
       const root_key = data[1];
       console.log("cid:", data[0]);
       console.log("root_key:", data[1]);
-      if(!rootId) {
+      if (!rootId) {
         return;
       }
-      
+
     } catch (err: any) {
       if (err.code === 4001) {
         console.log('Please connect to MetaMask.');
@@ -53,7 +53,7 @@ export default function Home() {
   const [rootId, setRootId] = useState('');
   const [rootKey, setRootKey] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
 
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
@@ -85,61 +85,70 @@ export default function Home() {
 
   return (
     // <DataProvider>
-    <div className="bg-gray-900 h-screen flex flex-col justify-center items-center text-white font-semibold">
-  <h1 className="text-6xl mb-8">Monas</h1>
-  <p className="text-2xl mb-12 text-center">
-    Lets connect to the next generation data store.<br />
-    Enjoy it!
-  </p>
-  <button
-    onClick={connectWallet}
-    className="rounded-full text-xl px-8 py-2 bg-blue-500 hover:bg-blue-700 text-white transition duration-300 ease-in-out"
-    disabled={connecting}
-  >
-    {connecting ? 'Connecting...' : 'Connect Wallet'}
-  </button>
-  <div className="mt-16 max-w-md mx-auto">
-    <form onSubmit={handleLogin} className="bg-white shadow-md rounded px-8 pt-6 pb-8">
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="rootId">
-          Root ID
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="rootId"
-          name="rootId"
-          type="text"
-          placeholder="Your Root ID"
-          value={rootId}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="rootKey">
-          Root Key
-        </label>
-        <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          id="rootKey"
-          name="rootKey"
-          type="password"
-          placeholder="Your Root Key"
-          value={rootKey}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="flex items-center justify-between">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
-          type="submit"
+    <div className="bg-titleBg bg-cover h-screen w-screen flex flex-col justify-center text-black01 font-SegoeUI font-semibold">
+      <div className='w-1/2 h-4/5 grid grid-auto-rows-auto gap-6% p-3.5%'>
+        <div>
+          <h1 className=" text-h1">Welcome to Monas</h1>
+          <h2 className=" text-h2">
+            Give you the power of data and<br />
+            the future is yours to decide!
+          </h2>
+        </div>
+        <button className="py-2 w-1/2 text-button text-white bg-pink01 rounded-full hover:bg-pink01Hover transition duration-300 ease-in-out"
+          onClick={connectWallet}
+          disabled={connecting}
         >
-          {isLoggedIn ? 'Logged In' : 'Log In'}
+          {connecting ? 'Connecting...' : 'Connect Wallet'}
         </button>
+
+        <div className='w-1/2 justify-center items-center inline-flex'>
+          <div className="h-px grow bg-black01"></div>
+          <div className='mx-3.5%'><span>or</span></div>
+          <div className="h-px grow bg-black01"></div>
+        </div>
+
+
+        <div className=" w-1/2 space-y-6%">
+          <p className=''>Already have an account?</p>
+          <form onSubmit={handleLogin} className="space-y-6%">
+            <div className="space-y-4%">
+              <label className="relative block p-3.5% text-label text-gray01 bg-white border rounded border-gray01 focus-within:border-pink01" htmlFor="rootId">
+                <input
+                  className="outline-none pt-3.5% focus:border-pink01 w-full text-black01"
+                  id="rootId"
+                  name="rootId"
+                  type="text"
+                  value={rootId}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                />
+                <span dir='Itr' className='absolute left-4% top-30% text-gray01 transition-all duration-300 pointer-events-none whitespace-nowrap'>Root ID</span>
+              </label>
+
+              <label className="relative block p-3.5% text-label text-gray01 bg-white border rounded border-gray01 focus-within:border-pink01" htmlFor="rootId">
+                <input
+                  className="outline-none pt-3.5% focus:border-pink01 w-full text-black01"
+                  id="rootKey"
+                  name="rootKey"
+                  type="password"
+                  value={rootKey}
+                  onChange={handleInputChange}
+                  placeholder=" "
+                />
+                <span dir='Itr' className='absolute left-4% top-30% text-gray01 transition-all duration-300 pointer-events-none whitespace-nowrap'>Root Key</span>
+              </label>
+            </div>
+
+            <button className="py-2 w-full text-button text-pink01 bg-white border rounded-full border-pink01 hover:bg-pink02 transition duration-300 ease-in-out"
+              type="submit"
+            >
+              {isLoggedIn ? 'Logged In' : 'Log In'}
+            </button>
+          </form>
+        </div>
       </div>
-    </form>
-  </div>
-</div>
-// </DataProvider>
+    </div>
+    // </DataProvider>
 
   );
 }
