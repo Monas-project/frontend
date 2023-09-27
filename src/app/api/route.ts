@@ -1,9 +1,12 @@
-import formidable from "formidable";
-import type { NextApiRequest, NextApiResponse } from 'next'
-import fs from "fs";
+// import formidable from "formidable";
+const formidable = require("formidable");
+import { NextResponse } from 'next/server';
+// import type { NextApiRequest, NextApiResponse } from 'next'
+// import fs from "fs";
+const fs = require("fs");
 import FormData from "form-data";
 const pinataSDK = require("@pinata/sdk");
-const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_JWT });
+const pinata = new pinataSDK({ pinataJWTKey: process.env.NEXT_PUBLIC_PINATA_JWT });
 
 export const config = {
   api: {
@@ -29,16 +32,17 @@ const saveFile = async (file: any) => {
   }
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: Request ,res: NextResponse) {
   console.log("req.method", req.method);
   if (req.method === "POST") {
     try {
       const form = new formidable.IncomingForm();
-      form.parse(req, async function (err, fields, files) {
+      form.parse(req, async function (err: any, fields: any, files: any) {
         if (err) {
           console.log({ err });
           return res.status(500).send("Upload Error");
         }
+        // const filePath =files.file.path;
         const response = await saveFile(files.file);
         const { IpfsHash } = response;
 
@@ -51,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === "GET") {
     try {
       const response = await pinata.pinList(
-        { pinataJWTKey: process.env.PINATA_JWT },
+        { pinataJWTKey: process.env.NEXT_PUBLIC_PINATA_JWT },
         {
           pageLimit: 1,
         }
