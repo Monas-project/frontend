@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fluentui/react-icons": "^2.0.218",
     "@metamask/detect-provider": "^2.0.0",
     "@pinata/sdk": "^2.1.0",
     "@types/node": "20.5.9",

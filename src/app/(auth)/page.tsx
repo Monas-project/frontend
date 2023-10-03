@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { signup } from "../utils/api/signup";
-import { login } from "../utils/api/login";
+import { signup } from "../../utils/api/signup";
+import { login } from "../../utils/api/login";
 // import { useData, DataProvider } from "@/context/metaData";
 
 
