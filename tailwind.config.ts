@@ -32,8 +32,7 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        homeBgLight: "url('../../public/homeBgLight.png')",
-        homeBgDark: "url('/homeBgDark.png')",
+        titleBg: "url('../../public/bg_title.png')",
       },
 
       colors: {
@@ -45,22 +44,6 @@ const config: Config = {
         pink03: "#FFECF2",
         gray01: "#CCCCCC",
         gray02: "#757575",
-
-        lightFont: "#0F0F0F",
-        darkFont: "#FCFCFC",
-
-        lightBg: "#fff",
-        darkBg: "#0D0C0C",
-        lightInputBg: "#FAF2F4",
-        darkInputBg: "#423036",
-        lightInputFont: "#ACA0A4",
-        darkInputFont: "#8A7F82",
-        lightInputOutline: "#FFEBF1",
-        darkInputOutline: "#4A2632",
-        lightInputActiveBg: "#fff",
-        darkInputActiveBg: "#4A2632",
-        lightBorder: "#DECFD5",
-        darkBorder: "#71535E",
       },
 
       fontFamily: {
@@ -72,26 +55,16 @@ const config: Config = {
       },
 
       fontSize: {
-        h1: "377%",
-        h2: "145%",
-
-        label: "100%rem",
+        h1: "4em",
+        h2: "1.5em",
+        button: "1rem",
+        label: "1rem",
 
         heading: "1.55rem",
       },
 
       spacing: {
-        "3": "3%",
-        "15.7": "15.7%",
-        "54": "54%",
-        buttonPy: "3%",
-        placefolderT: "25%",
-        placefolderL: "5%",
-        inputPx: "5.3%",
-        inputPt: "7.5%",
-        inputPb: "1.5%",
-
-        "3.5": "3.5%",
+        "3.5%": "3.5%",
         "4%": "4%",
         "4.5%": "4.5%",
         "6%": "6%",
@@ -114,28 +87,8 @@ const config: Config = {
         "13rem": "13rem",
       },
     },
-
-    screens: {
-      "2xl": { max: "1535px" },
-      // => @media (max-width: 1535px) { ... }
-
-      xl: { max: "1279px" },
-      // => @media (max-width: 1279px) { ... }
-
-      lg: { max: "1023px" },
-      // => @media (max-width: 1023px) { ... }
-
-      md: { max: "767px" },
-      // => @media (max-width: 767px) { ... }
-
-      sm: { max: "639px" },
-      // => @media (max-width: 639px) { ... }
-    },
   },
-
-  darkMode: "class",
-
-  /*  plugins: [
+  plugins: [
     function ({ addUtilities }) {
       const newUtilities = {
         ".transform-gpu": {
@@ -151,6 +104,6 @@ const config: Config = {
       };
       addUtilities(newUtilities, ["responsive", "hover"]);
     },
-  ], */
+  ],
 };
 export default config;

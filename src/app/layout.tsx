@@ -2,8 +2,6 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { DataProvider } from '@/context/metaData'
-import { Providers } from '../components/providers'
-import ResizeText from '../components/FontResize'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,15 +16,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={inter.className}>
-        <DataProvider>
-          <Providers>
-            {/* <ResizeText> */}
-            {children}
-            {/* </ResizeText> */}
-          </Providers>
-        </DataProvider>
+        <DataProvider>{children}</DataProvider>
       </body>
     </html>
   )

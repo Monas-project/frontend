@@ -1,14 +1,12 @@
 // import formidable from "formidable";
 const formidable = require("formidable");
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 // import type { NextApiRequest, NextApiResponse } from 'next'
 // import fs from "fs";
 const fs = require("fs");
 import FormData from "form-data";
 const pinataSDK = require("@pinata/sdk");
-const pinata = new pinataSDK({
-  pinataJWTKey: process.env.NEXT_PUBLIC_PINATA_JWT,
-});
+const pinata = new pinataSDK({ pinataJWTKey: process.env.NEXT_PUBLIC_PINATA_JWT });
 
 export const config = {
   api: {
@@ -34,7 +32,7 @@ const saveFile = async (file: any) => {
   }
 };
 
-export async function POST(req: Request, res: NextResponse) {
+export async function POST(req: Request ,res: NextResponse) {
   console.log("req.method", req.method);
   if (req.method === "POST") {
     try {
