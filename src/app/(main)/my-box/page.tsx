@@ -1,38 +1,61 @@
 "use client";
 import Link from 'next/link';
+import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image';
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Files from "@/components/Files";
-// import { useData, DataProvider } from "@/context/metaData";
+import { useDataContext } from "@/context/metaData";
+import { uploadFolderAPI } from "@/utils/api/uploadFolder";
+import { uploadFileAPI } from "@/utils/api/uploadFile";
+import { fetchAPI } from "@/utils/api/fetch";
+import DarkModeButton from '@/components/DarkMode';
 
 const MyBox = () => {
   const router = useRouter();
   const searchParams = useSearchParams()
-  // const cid = searchParams.get('cid');
-  const root = {
-    "name": "Root",
-    "owner": "0x123...576",
-    "creation_date": "",
-    "location": "",
-    "parent": { "name": "", "location": "" },
-    "child": [
-      { "name": "AAAAAAAAAAAAAAAAFile1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
-      { "name": "File2", "isFile": true, "creation_date": "2023-10-09", "location": "file2.location" },
-      { "name": "Folder1", "isFile": false, "creation_date": "2009-09-09", "location": "folder2.location" },
-      { "name": "Folder2", "isFile": false, "creation_date": "2002-01-04", "location": "folder2.location" },
-    ]
-  };
+  const { root, setRoot } = useDataContext();
+  const [rootId, setRootId] = useState('');
+  console.log("root", root)
+  const childData = root?.child || {};
+  console.log("childData", childData)
 
-  // path作成--------------------------------------------------
+  useEffect(() => {
+    const getRoot = async () => {
+      const cid = searchParams.get('cid');
+      if (!cid) {
+        return;
+      }
+      try {
+        setRootId(cid);
+        console.log("data", root);
+        setRoot(root);
+      } catch (error) {
+        console.error('Login error:', error);
+      }
+    };
+    getRoot();
+  }, [])
+
+  // const root = {
+  //   "name": "Root",
+  //   "owner": "0x123...576",
+  //   "creation_date": "",
+  //   "location": "", 
+  //   "parent": { "name": "", "location": "" },
+  //   "child": [
+  //       { "name": "AAAAAAAAAAAAAAAAFile1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
+  //       { "name": "File2", "isFile": true, "creation_date": "2023-10-09","location": "file2.location" },
+  //       { "name": "Folder1", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
+  //       { "name": "Folder2", "isFile": false, "creation_date": "2002-01-04","location": "folder2.location" },
+  //   ]
+  // };
+
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [nextPath, setNextPath] = useState<string>('');
 
-  const addItem = () => {
-    if (nextPath.trim() !== '') {
-      setCurrentPath([...currentPath, nextPath]);
-      setNextPath('');
-    }
+  const addItem = (name: string) => {
+    setCurrentPath([...currentPath, name]);
   };
 
   const removeLastItem = () => {
@@ -43,75 +66,145 @@ const MyBox = () => {
     }
   };
 
-  // 配列の要素を文字列に変換する関数
-  const pathToString = (array: string[]) => {
-    return '/' + array.join('/') + '/';
+  const nextData = async (path: string) => {
+    console.log("直前nextData currentPath", currentPath)
+    // const folderId = "38745683465";
+    // router.push(`/my-box`);
+    console.log("NEXT path", path)
+    // const fetchPath = pathToString(path)
+    // console.log("NEXT path", fetchPath)
+    const data: any = await fetchAPI(path);
+    console.log("NEXT fetch後data", data)
+    setRoot(data);
+    // const nextPath = addItem(data.name);
+    setCurrentPath([...currentPath, data.name]);
+    console.log("後nextData currentPath", currentPath)
+    // setCurrentPath()
+    // addItem(data.name);
   };
-  // path作成--------------------------------------------------
 
+  const backData = async () => {
+    console.log("直前backData currentPath", currentPath)
+    const pathForPop = [...currentPath]
+    console.log("Back:currentPath", currentPath)
+    pathForPop.pop()
+    console.log("Back:currentPath", currentPath)
+    console.log("Back:pathForPop", pathForPop)
+    const path = pathToString(pathForPop)
+    console.log("path", path)
+    const data: any = await fetchAPI(path);
+    console.log("BACKfetch後data", data)
+    setRoot(data);
+    setCurrentPath(pathForPop)
+    console.log("後backData currentPath", currentPath)
+  }
+
+
+
+  const pathToString = (array: string[]) => {
+    return '/' + array.join('/');
+  };
 
   const [date, setDate] = useState(root);
-  const [dataList, setDataList] = useState(root.child);
+  const [dataList, setDataList] = useState(root?.child || []);
   const [owner, setOwner] = useState("0x253...354");
 
-  // ポップアップ用のState--------------------------------------------------
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [name, setName] = useState('');
+  const [isFilePopupOpen, setIsFilePopupOpen] = useState(false);
+  const [isFolderPopupOpen, setIsFolderPopupOpen] = useState(false);
+  const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
+  // const [selectedFile, setSelectedFile] = useState(null);
+  const [fileName, setFileName] = useState('');
+  const [folderName, setFolderName] = useState('');
   const [path, setPath] = useState('');
-
-  const [file, setFile] = useState("");
+  // const [file, setFile] = useState("");
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
-  // ポップアップを表示する関数
-  const openPopup = () => {
-    setIsPopupOpen(true);
+
+  const openFilePopup = () => {
+    setIsFilePopupOpen(true);
   };
-  // ポップアップを閉じる関数
-  const closePopup = () => {
-    setIsPopupOpen(false);
-    setSelectedFile(null);
-    setName('');
+
+  const closeFilePopup = () => {
+    setIsFilePopupOpen(false);
+    setCid("");
+    setFileName('');
+    setPath('');
+  };
+  const openFolderPopup = () => {
+    setIsFolderPopupOpen(true);
+  };
+
+  const closeFolderPopup = () => {
+    setIsFolderPopupOpen(false);
+    setFolderName('');
     setPath('');
   };
 
-  // ファイルアップロードとJSON形式への整形
-  const uploadAndFormat = async () => {
-    if (!selectedFile || !name || !path) {
-      // 必要な情報が足りない場合のエラーハンドリング
+  const openSharePopup = () => {
+    setIsSharePopupOpen(true);
+  };
+  const closeSharePopup = () => {
+    setIsSharePopupOpen(false);
+  };
+
+  const uploadData = async () => {
+    if (!cid || !fileName) {
       alert('必要な情報を入力してください');
       return;
     }
 
-    // JSON形式に整形
+    // addItem(fileName);
+    // pathToString(currentPath);
+
+    const pathForPush = [...currentPath]
+    pathForPush.push(fileName)
+    const path = pathToString(pathForPush)
+
     const formattedData = {
-      name: name,
+      name: fileName,
       path: path,
-      location: cid,
+      isDirectory: false,
+      data_cid: cid,
     };
     console.log("formattedData", formattedData)
 
     // データを使って必要な処理を実行する（例：API呼び出し、データの保存など）
-
-    // ポップアップを閉じる
-    closePopup();
+    try {
+      const data: any = await uploadFileAPI(formattedData);
+      console.log("metadata", data);
+      setRoot(data);
+      // router.push(`/my-box?cid=${rootId}`);
+    } catch (error) {
+      console.error('UploadFile error:', error);
+    }
+    console.log("ファイルupload", currentPath)
+    closeFilePopup();
   };
 
-
-  const uploadFile = async (fileToUpload: any) => {
+  const uploadFile = async (file: any) => {
     try {
       setUploading(true);
+
       const formData = new FormData();
-      formData.append("file", fileToUpload, fileToUpload.name);
-      console.log("formData", formData)
-      const res = await fetch("/api", {
-        method: "POST",
-        body: formData,
-      });
-      console.log("res", res)
-      const ipfsHash = await res.text();
-      setCid(ipfsHash);
-      // console.log("ipfsHash", ipfsHash);
+      formData.append("file", file, file.name);
+      const res = await axios.post(
+        // APIのURL
+        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        // req params
+        formData,
+        // header
+        {
+          headers: {
+            accept: 'application/json',
+            pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
+            pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
+            'Content-Type': `multipart/form-data; boundary=${formData}`,
+          },
+        },
+      );
+      const cid = await res.data.IpfsHash;
+      console.log("cid", cid)
+      setCid(cid);
       setUploading(false);
     } catch (e) {
       console.log(e);
@@ -119,48 +212,71 @@ const MyBox = () => {
       alert("Trouble uploading file");
     }
   };
+
   const handleFileChange = (e: any) => {
-    setSelectedFile(e.target.files[0]);
+    console.log("e.target.files[0]", e.target.files[0])
+    // setSelectedFile(e.target.files[0]);
     uploadFile(e.target.files[0]);
   };
-  // ポップアップ用のState--------------------------------------------------
+
+  // フォルダアップロード
+  const handleCreateFolder = async (e: any) => {
+    if (!folderName) {
+      alert('必要な情報を入力してください');
+      return;
+    }
+
+    const pathForPush = [...currentPath]
+    pathForPush.push(folderName)
+    const path = pathToString(pathForPush)
+
+    const formattedData = {
+      name: folderName,
+      path: path,
+      isDirectory: true,
+      data_cid: "",
+    };
+    console.log("formattedData", formattedData)
+
+    // データを使って必要な処理を実行する（例：API呼び出し、データの保存など）
+    try {
+      const data: any = await uploadFolderAPI(formattedData);
+      console.log("metadata", data);
+
+      setRoot(data);
+      // router.push(`/my-box?cid=${rootId}`);
+    } catch (error) {
+      console.error('UploadFolder error:', error);
+    }
+    console.log("フォルダupload", currentPath)
+
+    closeFolderPopup();
+  };
 
 
 
-  // / My Boxを初期状態にリセットする関数
-  // const resetMyBox = () => {
-  //   // 初期データまたはAPIからデータを再取得して、setDataListでセットする
-  //   setDataList(root.child);
-  // }
-
-  const getDate = (testFolderId: string) => {
-
-    const folderId = "38745683465";
-
-    router.push(`/my-box/${folderId}`);
-  }
-
-  const handleDelete = (location: string) => {
-    // delete処理
-  }
-
+  const handleSahre = (location: string) => {
+    openSharePopup();
+  };
   const handleDownload = (location: string) => {
-    // download処理
-  }
-
-  const handleCreateFolder = () => {
-    // フォルダ作成の処理をここに追加
+    // delete処理
   };
 
-  const handleUploadFile = () => {
-    // ファイルアップロードの処理をここに追加
-  };
 
   return (
-    // <DataProvider>
-    <div className="space-y-1rem">
+    <div className="space-y-1rem bg-yellow-500 dark:bg-gray-500">
 
       <h1 className="text-heading">Own Space</h1>
+      <DarkModeButton />
+
+      <div>
+        <p>{pathToString(currentPath)}</p>
+        <button
+          onClick={backData}
+          className="text-lg text-gray-600 font-semibold mb-4"
+        >Back
+        </button>
+      </div>
 
       <div className='w-full flex flex-row justify-between items-center font-normal text-black02'>
         <div className='flex flex-row space-x-0.5rem'>
@@ -195,7 +311,7 @@ const MyBox = () => {
 
         <div className='flex flex-row-reverse space-x-4%'>
           <button className="flex border rounded-md items-center h-4rem whitespace-nowrap ml-0.5rem"
-            onClick={handleCreateFolder}
+            onClick={openFolderPopup}
           >
             <span className='w-1.25rem h-1.25rem ml-2rem'>
               <svg width="24" height="24" viewBox="0 0 24 24">
@@ -207,7 +323,7 @@ const MyBox = () => {
           </button>
 
           <button className="flex border rounded-md items-center h-4rem whitespace-nowrap"
-            onClick={openPopup}
+            onClick={openFilePopup}
           >
 
             <span className='w-1.25rem h-1.25rem ml-2rem'>
@@ -232,112 +348,119 @@ const MyBox = () => {
         </div>
       </div>
 
-      <table className="w-full text-left">
-        <thead>
-          <tr className='border-b border-gray01'>
-            <th className="w-4.5% p-0.5rem font-normal">Name</th>
-            <th className="w-49% font-normal"></th>
-            <th className="w-11.5% font-normal">Owner</th>
-            <th className="w-20% font-normal">Data Modified</th>
-            <th className="w-15% font-normal">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dataList.map((item, index) => (
-            <tr key={index}>
-              <td className="p-0.5rem border-b border-gray01">
-                {item.isFile ? (
-                  <Image src="/document-24-filled.svg" alt="file" width={25} height={25} />
-                ) : (
-                  <Image src="/folder-24-filled.svg" alt="folder" width={25} height={25} onClick={() => getDate(item.location)} />
-                )}
-              </td>
-              {item.isFile ? (
-                <td className="border-b border-gray01">{item.name}</td>
-              ) : (
-                <td className="border-b border-gray01" onClick={() => getDate(item.location)}>{item.name}</td>
-              )}
-              <td className="border-b border-gray01">{date.owner}</td>
-              <td className="border-b border-gray01">{item.creation_date}</td>
-              <td className="py-0.5rem border-b border-gray01 space-x-1rem">
-                {item.isFile ? (
-                  <>
-                    <Image
-                      src="/arrow-download-24-regular.svg"
-                      alt="Download"
-                      width={20}
-                      height={20}
-                      onClick={() => handleDownload(item.location)}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/share-24-regular.svg"
-                      alt="Share"
-                      width={20}
-                      height={20}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/delete-24-regular.svg"
-                      alt="Delete"
-                      width={20}
-                      height={20}
-                      onClick={() => handleDelete(item.location)}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/key-24-regular.svg"
-                      alt="re-encryt"
-                      width={20}
-                      height={20}
-                      className='inline-block'
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src="/arrow-download-24-regular.svg"
-                      alt="Download"
-                      width={20}
-                      height={20}
-                      onClick={() => handleDownload(item.location)}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/share-24-regular.svg"
-                      alt="Share"
-                      width={20}
-                      height={20}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/delete-24-regular.svg"
-                      alt="Delete"
-                      width={20}
-                      height={20}
-                      onClick={() => handleDelete(item.location)}
-                      className='inline-block'
-                    />
-                    <Image
-                      src="/key-24-regular.svg"
-                      alt="re-encryt"
-                      width={20}
-                      height={20}
-                      className='inline-block'
-                    />
-                  </>
-                )}
-              </td>
+      {root?.child && Object.keys(root.child).length > 0 ? (
+        <table className="w-full text-left">
+          <thead>
+            <tr className='border-b border-gray01'>
+              <th className="w-4.5% p-0.5rem font-normal">Name</th>
+              <th className="w-49% font-normal"></th>
+              <th className="w-11.5% font-normal">Owner</th>
+              <th className="w-20% font-normal">Data Modified</th>
+              <th className="w-15% font-normal">Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {Object.entries(root?.child).map(([path, item], index) => (
+              <tr key={index}>
+                <td className="p-0.5rem border-b border-gray01">
+                  {!item.is_directory ? (
+                    <a href={"https://gateway.pinata.cloud/ipfs/" + item.cid} target="_blank">
+                      <Image src="/document-24-filled.svg" alt="file" width={25} height={25} />
+                    </a>
+                  ) : (
+                    <Image src="/folder-24-filled.svg" alt="folder" width={25} height={25} onClick={() => nextData(path)} />
+                  )}
+                </td>
+                {!item.is_directory ? (
+                  <td className="border-b border-gray01">{item.name}</td>
+                ) : (
+                  <td className="border-b border-gray01" onClick={() => nextData(path)}>{item.name}</td>
+                )}
+                <td className="border-b border-gray01">{item.metadata_cid}</td>
+                <td className="border-b border-gray01">{item.creation_date}</td>
+                <td className="py-0.5rem border-b border-gray01 space-x-1rem">
+                  {!item.is_directory ? (
+                    <>
+                      <Image
+                        src="/arrow-download-24-regular.svg"
+                        alt="Download"
+                        width={20}
+                        height={20}
+                        onClick={() => handleDownload(item.location)}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/share-24-regular.svg"
+                        alt="Share"
+                        width={20}
+                        height={20}
+                        onClick={() => handleSahre()}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/delete-24-regular.svg"
+                        alt="Delete"
+                        width={20}
+                        height={20}
+                        onClick={() => handleDelete(item.location)}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/key-24-regular.svg"
+                        alt="re-encryt"
+                        width={20}
+                        height={20}
+                        className='inline-block'
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Image
+                        src="/arrow-download-24-regular.svg"
+                        alt="Download"
+                        width={20}
+                        height={20}
+                        onClick={() => handleDownload(item.location)}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/share-24-regular.svg"
+                        alt="Share"
+                        width={20}
+                        height={20}
+                        onClick={() => handleSahre()}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/delete-24-regular.svg"
+                        alt="Delete"
+                        width={20}
+                        height={20}
+                        onClick={() => handleDelete(item.location)}
+                        className='inline-block'
+                      />
+                      <Image
+                        src="/key-24-regular.svg"
+                        alt="re-encryt"
+                        width={20}
+                        height={20}
+                        className='inline-block'
+                      />
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <h2 className="text-center text-gray-600">You don't have your data</h2>
+      )}
 
-      {/* ファイルアップロードポップアップ */}
-      {isPopupOpen && (
+      {isFilePopupOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
           <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
-            <h2 className=" text-heading font-semibold">Upload File</h2>
+            <h2 className="text-heading font-semibold">Upload File</h2>
 
             <div className='space-y-1.25rem'>
               <input
@@ -352,40 +475,78 @@ const MyBox = () => {
               <input
                 type="text"
                 placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mb-2 p-2 bg-pink02 w-full focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
-              />
-              <input
-                type="text"
-                placeholder="Path"
-                value={path}
-                onChange={(e) => setPath(e.target.value)}
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
                 className="mb-2 p-2 bg-pink02 w-full focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
               />
             </div>
 
-
             <div className='w-full flex flex-row justify-between items-center'>
               <button
-                onClick={closePopup}
+                onClick={uploadData}
+                className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
+              >
+                add data
+              </button>
+              <button
+                onClick={closeFilePopup}
                 className="py-2 w-1/5 font-semibold text-button bg-white border border-black01  rounded hover:bg-gray-100"
               >
                 Cancel
               </button>
 
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isFolderPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
+          <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem w-1/2">
+            <h2 className="text-heading font-semibold">Create Folder</h2>
+            <input
+              type="text"
+              placeholder="Name"
+              value={folderName}
+              onChange={(e) => setFolderName(e.target.value)}
+              className="mb-2 p-2 bg-pink02 w-full focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
+            />
+
+            <div className='w-full flex flex-row justify-between items-center'>
               <button
-                onClick={uploadAndFormat}
+                onClick={handleCreateFolder}
                 className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
               >
-                Upload
+                Create Folder
+              </button>
+              <button
+                onClick={closeFolderPopup}
+                className="py-2 w-1/5 font-semibold text-button bg-white border border-black01  rounded hover:bg-gray-100"
+              >
+                Cancel
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {isSharePopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
+          <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
+            <h2 className="text-heading font-semibold">Keep The Key Secret</h2>
+            <h3 className="text-heading font-semibold">BvOA9Fxk4lsa7TeUiGWBDnoJbZ3UPXk69nxiitoyMyQ=</h3>
+            <button
+              onClick={closeSharePopup}
+              className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
+            >
+              OK
+            </button>
+
+          </div>
+        </div>
+      )}
     </div>
-    // </DataProvider>
+
   )
 };
 export default MyBox;

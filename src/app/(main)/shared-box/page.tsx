@@ -1,5 +1,3 @@
-
-
 const SharedBox = () => {
   const dataList = [
     { name: "AAAA", owner: "太郎", dataModified: "2013/05/30" },

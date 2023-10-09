@@ -56,14 +56,6 @@ const Folder = (props: any) => {
     // download処理
   }
 
-  // UploadFileとCreateFolderボタンでエラーを出さないために貼り付けた🥺
-  const handleCreateFolder = () => {
-    // フォルダ作成の処理をここに追加
-  };
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
 
   // const dataList = [
   //   {
@@ -138,7 +130,7 @@ const Folder = (props: any) => {
 
         <div className='flex flex-row-reverse space-x-4%'>
           <button className="flex border rounded-md items-center h-4rem whitespace-nowrap ml-0.5rem"
-            onClick={handleCreateFolder}
+
           >
             <span className='w-1.25rem h-1.25rem ml-2rem'>
               <svg width="24" height="24" viewBox="0 0 24 24">
@@ -150,7 +142,7 @@ const Folder = (props: any) => {
           </button>
 
           <button className="flex border rounded-md items-center h-4rem whitespace-nowrap"
-            onClick={openPopup}
+
           >
 
             <span className='w-1.25rem h-1.25rem ml-2rem'>
@@ -171,7 +163,7 @@ const Folder = (props: any) => {
             <th className="w-4.5% p-0.5rem font-normal">Name</th>
             <th className="w-49% font-normal"></th>
             <th className="w-11.5% font-normal">Owner</th>
-            <th className="w-20% font-normal">Data Modified</th>
+            <th className="w-20% font-normal">Data Info</th>
             <th className="w-15% font-normal">Action</th>
           </tr>
         </thead>
