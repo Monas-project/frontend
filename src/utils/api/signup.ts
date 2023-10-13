@@ -1,16 +1,26 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const ENDPOINT = `${API_URL}/signup`;
 
+export type signupAPIReq = {
+  address: string
+  signature: string
+};
+
 export type signupAPIRes = {
-  res: any[];
+  res: any;
   // error: boolean;
 };
 
-export const signup = async () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  console.log("API_URL", API_URL);
+export const signup = async (address: string, signature: string) => {
+  const req: signupAPIReq = {
+    address,
+    signature
+  };
+  const body = JSON.stringify(req);
   console.log("ENDPOINT", ENDPOINT);
-  const res = await fetch(ENDPOINT, { method: "POST" });
+  const res = await fetch(ENDPOINT, { method: "POST", headers: {
+    'Content-Type': 'application/json'
+  }, body: body });
   // console.log("res.body", res.body);
   // return (await res.json()) as signupAPIRes;
 

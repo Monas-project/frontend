@@ -3,6 +3,7 @@ const ENDPOINT = `${API_URL}/upload`;
 
 export type uploadAPIReq = {
   name: string,
+  id: string,
   path: string,
   isDirectory: boolean,
   data_cid: string
@@ -16,6 +17,7 @@ export type uploadAPIRes = {
 export const uploadFolderAPI = async (request: uploadAPIReq) => {
   const req: uploadAPIReq = {
     name: request.name,
+    id: request.id,
     path: request.path,
     isDirectory: request.isDirectory,
     data_cid: request.data_cid
