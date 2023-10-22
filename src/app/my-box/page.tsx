@@ -7,6 +7,7 @@ import { use, useEffect, useState } from 'react';
 import { NavigationSidebar } from '../../components/navigation/navigation-sidebar';
 import Files from "@/components/Files";
 import { useDataContext } from "@/context/metaData";
+import { useUserContext } from "@/context/userAddress";
 import { uploadFolderAPI } from "@/utils/api/uploadFolder";
 import { uploadFileAPI } from "@/utils/api/uploadFile";
 import { fetchAPI } from "@/utils/api/fetch";
@@ -17,6 +18,7 @@ const MyBox = () => {
   const searchParams = useSearchParams()
   const { root, setRoot } = useDataContext();
   const [rootId, setRootId] = useState('');
+  const { user, setUser } = useUserContext();
   console.log("root", root)
   const childData = root?.child || {};
   console.log("childData", childData)
@@ -113,7 +115,7 @@ const MyBox = () => {
   const [isFilePopupOpen, setIsFilePopupOpen] = useState(false);
   const [isFolderPopupOpen, setIsFolderPopupOpen] = useState(false);
   const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [folderName, setFolderName] = useState('');
   const [path, setPath] = useState('');
@@ -149,7 +151,7 @@ const MyBox = () => {
   };
 
   const uploadData = async () => {
-    if (!cid || !fileName) {
+    if (!selectedFile || !fileName) {
       alert('必要な情報を入力してください');
       return;
     }
@@ -165,7 +167,7 @@ const MyBox = () => {
       name: fileName,
       path: path,
       isDirectory: false,
-      data_cid: cid,
+      data: selectedFile,
     };
     console.log("formattedData", formattedData)
 
@@ -182,42 +184,43 @@ const MyBox = () => {
     closeFilePopup();
   };
 
-  const uploadFile = async (file: any) => {
-    try {
-      setUploading(true);
+  // ipfsへのuploadはバックエンドでする
+  // const uploadFile = async (file: any) => {
+  //   try {
+  //     setUploading(true);
 
-      const formData = new FormData();
-      formData.append("file", file, file.name);
-      const res = await axios.post(
-        // APIのURL
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        // req params
-        formData,
-        // header
-        {
-          headers: {
-            accept: 'application/json',
-            pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
-            pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
-            'Content-Type': `multipart/form-data; boundary=${formData}`,
-          },
-        },
-      );
-      const cid = await res.data.IpfsHash;
-      console.log("cid", cid)
-      setCid(cid);
-      setUploading(false);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-      alert("Trouble uploading file");
-    }
-  };
+  //     const formData = new FormData();
+  //     formData.append("file", file, file.name);
+  //     const res = await axios.post(
+  //       // APIのURL
+  //       "https://api.pinata.cloud/pinning/pinFileToIPFS",
+  //       // req params
+  //       formData,
+  //       // header
+  //       {
+  //         headers: {
+  //           accept: 'application/json',
+  //           pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
+  //           pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
+  //           'Content-Type': `multipart/form-data; boundary=${formData}`,
+  //         },
+  //       },
+  //     );
+  //     const cid = await res.data.IpfsHash;
+  //     console.log("cid", cid)
+  //     setCid(cid);
+  //     setUploading(false);
+  //   } catch (e) {
+  //     console.log(e);
+  //     setUploading(false);
+  //     alert("Trouble uploading file");
+  //   }
+  // };
 
   const handleFileChange = (e: any) => {
     console.log("e.target.files[0]", e.target.files[0])
-    // setSelectedFile(e.target.files[0]);
-    uploadFile(e.target.files[0]);
+    setSelectedFile(e.target.files[0]);
+    // uploadFile(e.target.files[0]);
   };
 
   // フォルダアップロード
@@ -233,9 +236,10 @@ const MyBox = () => {
 
     const formattedData = {
       name: folderName,
+      id: user,
       path: path,
       isDirectory: true,
-      data_cid: "",
+      data: "",
     };
     console.log("formattedData", formattedData)
 

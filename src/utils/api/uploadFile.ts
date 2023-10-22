@@ -5,7 +5,7 @@ export type uploadAPIReq = {
   name: string,
   path: string,
   isDirectory: boolean,
-  data_cid: string
+  data: File
 };
 
 export type uploadAPIRes = {
@@ -14,17 +14,29 @@ export type uploadAPIRes = {
 };
 
 export const uploadFileAPI = async (request: uploadAPIReq) => {
-  const req: uploadAPIReq = {
-    name: request.name,
-    path: request.path,
-    isDirectory: request.isDirectory,
-    data_cid: request.data_cid
-  };
-  const body = JSON.stringify(req);
-  console.log("Upload body: ", body)
-  const res = await fetch(ENDPOINT, { method: "POST", headers: {
-    'Content-Type': 'application/json'
-  }, body: body });
+  // const req: uploadAPIReq = {
+  //   name: request.name,
+  //   path: request.path,
+  //   isDirectory: request.isDirectory,
+  //   data: request.data
+  // };
+  // const body = JSON.stringify(req);
+  // console.log("Upload body: ", body)
+  // const res = await fetch(ENDPOINT, { method: "POST", headers: {
+  //   'Content-Type': 'application/json'
+  // }, body: body });
+  const formData = new FormData();
+  formData.append('name', request.name);
+  formData.append('path', request.path);
+  formData.append('isDirectory', request.isDirectory.toString());
+  formData.append('data', request.data);
+  const res = await fetch(ENDPOINT, {
+    method: "POST",
+    body: formData
+  });
+
+
+
   console.log("uploaded");
 
   // ストリームからデータを読み取る

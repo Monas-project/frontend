@@ -9,12 +9,14 @@ import { ethers } from 'ethers';
 import { signup } from "../utils/api/signup";
 import { login } from "../utils/api/login";
 import { useDataContext } from "@/context/metaData";
+import { useUserContext } from "@/context/userAddress";
 
 export default function Home() {
   const [connecting, setConnecting] = useState<boolean>(false);
   const router = useRouter();
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
-  const [address, setAddress] = useState<string>('');
+  // const [address, setAddress] = useState<string>('');
+  const { user, setUser, sign, setSign } = useUserContext();
 
   const connectWallet = async () => {
     setConnecting(true);
@@ -29,8 +31,10 @@ export default function Home() {
 
     const message = "Please sign this message to log in.";
     const signature = await signer.signMessage(message);
+    setSign(signature);
+    console.log("signature", sign);
     const walletAddress = await signer.getAddress();
-    setAddress(walletAddress);
+    setUser(walletAddress);
     
     // Send signature to the server
     // const response = await fetch("/signup", {
@@ -106,7 +110,7 @@ export default function Home() {
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
-    if (!address) {
+    if (!user) {
       return;
     }
     console.log('rootId:', rootId);
@@ -114,7 +118,7 @@ export default function Home() {
 
     try {
       // const data: any = await login(rootId, rootKey);
-      const data: any = await login(address);
+      const data: any = await login(user);
       console.log("metadata", data.metadata);
       setRoot(data.metadata);
       setIsLoggedIn(true);
