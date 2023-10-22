@@ -325,6 +325,14 @@ const MyBox = () => {
                       dark:bg-darkBg dark:border-darkContentsBorder'>
           <div className='flex flex-rows items-center justify-between'>
             <h1 className='text-folderTitle'>Own Space</h1>
+            <div className='flex flex-row'>
+              <p>{pathToString(currentPath)}</p>
+              <button
+                onClick={backData}
+                className="text-lg text-gray-600 font-semibold mb-4"
+              >Back
+              </button>
+            </div>
             <button><Grid16Filled /></button>
           </div>
           <div className='flex flex-rows justify-between items-center text-14'>
@@ -519,7 +527,7 @@ const MyBox = () => {
               <tbody>
                 {Object.entries(root?.child).map(([path, item], index) => (
                   <tr key={index}
-                    className='group border border-x-transparent
+                    className='group border border-x-transparent hover:border-y-[2px] hover:border-pink01 
                     border-y-lightTableBorder hover:bg-lightHoverTrBg
                     dark:border-y-darkTableBorder dark:hover:bg-darkHoverTrBg
                     [&_td]:pr-3 [&_td]:py-[0.797rem] [&_td]:truncate'>
@@ -970,10 +978,7 @@ const MyBox = () => {
       </div> */}
       </>
 
-    </div>
-
-
-
+</div>
   )
 };
 export default MyBox;

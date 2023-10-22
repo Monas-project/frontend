@@ -1,9 +1,12 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const ENDPOINT = `${API_URL}/login`;
 
+// export type loginAPIReq = {
+//   cid: string;
+//   root_key: string;
+// };
 export type loginAPIReq = {
-  cid: string;
-  root_key: string;
+  address: string;
 };
 
 export type loginAPIRes = {
@@ -11,10 +14,9 @@ export type loginAPIRes = {
   // error: boolean;
 };
 
-export const login = async (rootId: string, rootKey: string) => {
+export const login = async (address: string) => {
   const req: loginAPIReq = {
-    "cid": rootId,
-    "root_key": rootKey,
+    "address": address,
   };
   const body = JSON.stringify(req);
   console.log("login body: ", body)

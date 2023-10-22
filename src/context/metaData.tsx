@@ -21,21 +21,20 @@ export interface Metadata {
 }
 
 // 使用例
-/* const initialData: Metadata = {
+const initialData: Metadata = {
   name: "root",
   creation_date: "",
   child: {
-    "1": {
+    "": {
       cid: "",
-      name: "aaaaaaaaa",
+      name: "",
       is_directory: true,
     },
   },
 };
- */
 
 // UI確認用
-const initialData: Metadata = {
+/* const initialData: Metadata = {
   name: "root",
   creation_date: "",
   child: [
@@ -52,9 +51,8 @@ const initialData: Metadata = {
     { cid: "", name: "hhh", is_directory: true },
     { cid: "", name: "hhh", is_directory: true },
     { cid: "", name: "hhh", is_directory: true },
-    
   ],
-};
+}; */
 
 
 

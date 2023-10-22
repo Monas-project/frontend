@@ -1,7 +1,11 @@
 "use client";
+// interface Window {
+//   ethereum: any;
+// }
 import React, { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import detectEthereumProvider from '@metamask/detect-provider';
+import { ethers } from 'ethers';
 import { signup } from "../../utils/api/signup";
 import { login } from "../../utils/api/login";
 import { useDataContext } from "@/context/metaData";
@@ -9,40 +13,81 @@ import { useDataContext } from "@/context/metaData";
 export default function Home() {
   const [connecting, setConnecting] = useState<boolean>(false);
   const router = useRouter();
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [address, setAddress] = useState<string>('');
 
   const connectWallet = async () => {
     setConnecting(true);
-
-    try {
-      const provider = await detectEthereumProvider() as any;
-
-      if (!provider) {
-        throw new Error('Please install MetaMask!');
-      }
-
-      const accounts = await provider.request({
-        method: 'eth_requestAccounts',
-      }) as string[];
-
-      if (accounts.length > 0) {
-        console.log(accounts[0]);
-      }
-
-      const data: any = await signup();
-      const rootId = data[0];
-      const root_key = data[1];
-      if (!rootId) {
-        return;
-      }
-    } catch (err: any) {
-      if (err.code === 4001) {
-        console.log('Please connect to MetaMask.');
-      } else {
-        console.error(err);
-      }
-    } finally {
+    if (typeof (window as any).ethereum === 'undefined') {
+      console.error("Please install MetaMask");
       setConnecting(false);
+      return;
     }
+    
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    const signer = await provider.getSigner();
+
+    const message = "Please sign this message to log in.";
+    const signature = await signer.signMessage(message);
+    const walletAddress = await signer.getAddress();
+    setAddress(walletAddress);
+
+    // Send signature to the server
+    // const response = await fetch("/signup", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //         address: await signer.getAddress(),
+    //         signature: signature
+    //     })
+    // });
+
+    const response: any = await signup(walletAddress, signature);
+
+    // const data = await response.json();
+    if (response.access_token) {
+      // Save the JWT for future requests
+      localStorage.setItem("token", response.access_token);
+      console.log("localStorage.getItem", localStorage.getItem("token"))
+      setIsSignedIn(true);
+    } else {
+      // Authentication failed
+      console.log("Authentication failed")
+    }
+    setConnecting(false);
+
+    // try {
+    //   const provider = await detectEthereumProvider() as any;
+
+    //   if (!provider) {
+    //     throw new Error('Please install MetaMask!');
+    //   }
+
+    //   const accounts = await provider.request({
+    //     method: 'eth_requestAccounts',
+    //   }) as string[];
+
+    //   if (accounts.length > 0) {
+    //     console.log(accounts[0]);
+    //   }
+
+    //   const data: any = await signup();
+    //   const rootId = data[0];
+    //   const root_key = data[1];
+    //   if(!rootId) {
+    //     return;
+    //   }
+    // } catch (err: any) {
+    //   if (err.code === 4001) {
+    //     console.log('Please connect to MetaMask.');
+    //   } else {
+    //     console.error(err);
+    //   }
+    // } finally {
+    //   setConnecting(false);
+    // }
   };
 
   const [rootId, setRootId] = useState('');
@@ -61,11 +106,15 @@ export default function Home() {
 
   const handleLogin = async (event: any) => {
     event.preventDefault();
+    if (!address) {
+      return;
+    }
     console.log('rootId:', rootId);
     console.log('rootKey:', rootKey);
 
     try {
-      const data: any = await login(rootId, rootKey);
+      // const data: any = await login(rootId, rootKey);
+      const data: any = await login(address);
       console.log("metadata", data.metadata);
       setRoot(data.metadata);
       setIsLoggedIn(true);
@@ -102,7 +151,7 @@ export default function Home() {
           <button onClick={connectWallet} disabled={connecting}
             className='w-299.2 py-2.5 text-white text-base bg-pink01 rounded-full'
           >
-            {connecting ? 'Connecting...' : 'Sign up'}
+            {isSignedIn ? 'Connected' : (connecting ? 'Connecting...' : 'Connect Wallet')}
           </button>
 
           <div className='w-299.2 space-x-2.5 flex items-center'>
