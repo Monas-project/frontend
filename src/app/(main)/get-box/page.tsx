@@ -10,7 +10,7 @@ const GetBox = () => {
   return (
 
     <div className="space-y-1rem">
-      <h1 className="text-black01 text-heading">Get Box</h1>
+      <h1 className="text-heading">Get Box</h1>
       <div>
         <label className="block text-white-700 text-sm mb-2">
           URI :

@@ -37,8 +37,6 @@ const config: Config = {
       },
 
       colors: {
-        black01: "#1F1F1F",
-        black02: "#444746",
         pink01: "#FF4185",
         pink01Hover: "#E93374",
         pink02: "#FFFAFC",
@@ -46,72 +44,87 @@ const config: Config = {
         gray01: "#CCCCCC",
         gray02: "#757575",
 
-        lightFont: "#0F0F0F",
-        darkFont: "#FCFCFC",
+        lightFont: "#111111",
+        darkFont: "#F1F1F1",
 
         lightBg: "#fff",
-        darkBg: "#0D0C0C",
-        lightInputBg: "#FAF2F4",
-        darkInputBg: "#423036",
-        lightInputFont: "#ACA0A4",
-        darkInputFont: "#8A7F82",
-        lightInputOutline: "#FFEBF1",
-        darkInputOutline: "#4A2632",
-        lightInputActiveBg: "#fff",
-        darkInputActiveBg: "#4A2632",
-        lightBorder: "#DECFD5",
-        darkBorder: "#71535E",
-      },
+        darkBg: "#0f0f0f",
 
-      fontFamily: {
-        SegoeUI: ["Segoe UI"],
-      },
+        lightDropDownBg: "#fff",
+        darkDropDownBg: "#252525",
 
-      fontWeight: {
-        semilight: "350",
+        lightContentsBorder: "#f2f2f2",
+        lightLoginBtnBorder: "#DECFD5", // ログインボタンのborder
+        darkContentsBorder: "#3F3F3F",
+
+        lightItemBorder: "#111111",
+        darkItemBorder: "#F1F1F1",
+
+        lightSkelton01: "#EBEBEB",
+        darkSkelton01: "#252525",
+        lightSkelton02: "#E5E5E5",
+        darkSkelton02: "#292929",
+
+        lightHoverBtn: "#F2F2F2",
+        darkHoverBtn: "#3C3C3C",
+
+        lightTableBorder: "#ddd",
+        darkTableBorder: "#3F3F3F",
+        lightHoverTrBg: "#F2F2F2",
+        darkHoverTrBg: "#272727",
+
+        folder: "#FBCB4F",
+        document: "#2DCDFF",
       },
 
       fontSize: {
-        h1: "377%",
-        h2: "145%",
+        h1: "4rem",
+        h2: "1.688rem",
 
-        label: "100%rem",
+        base: "1.063rem",
+        folderTitle: "1.25rem",
 
-        heading: "1.55rem",
+        recentContentsDate: "0.75rem",
+
+        tableTh: "1.0625rem",
+
+        "14": "0.875rem",
+      },
+
+      lineHeight: {
+        accountNameHeight: "0.9375rem",
+        recentText: "1.125rem",
       },
 
       spacing: {
-        "3": "3%",
-        "15.7": "15.7%",
-        "54": "54%",
-        buttonPy: "3%",
-        placefolderT: "25%",
-        placefolderL: "5%",
-        inputPx: "5.3%",
-        inputPt: "7.5%",
-        inputPb: "1.5%",
+        "299.2": "18.7rem",
+        "60.8": "3.8rem",
 
-        "3.5": "3.5%",
-        "4%": "4%",
-        "4.5%": "4.5%",
-        "6%": "6%",
-        "11.5%": "11.5%",
-        "15%": "15%",
-        "18%": "18%",
-        "20%": "20%",
-        "23%": "23%",
-        "30%": "30%",
-        "49%": "49%",
-        "82%": "82%",
+        logoType: "1.36rem",
+        logoMark: "5.6rem",
+        navLogoType: "0.936rem",
 
-        "0.25rem": "0.25rem",
-        "0.5rem": "0.5rem",
-        "1rem": "1rem",
-        "1.25rem": "1.25rem",
-        "2rem": "2rem",
-        "2.5rem": "2.5rem",
-        "4rem": "4rem",
-        "13rem": "13rem",
+        sideberWidth: "15rem",
+
+        serchbarHeight: "3.5rem",
+        searchInputPt: "0.2rem",
+        accountNameHeight: "0.9375rem",
+      },
+
+      width: {
+        welcomeCatWidth: "23.6%",
+      },
+
+      minWidth: {
+        filterItemGrid: "6.6rem",
+      },
+
+      borderWidth: {
+        "1": "1px",
+      },
+
+      gridTemplateColumns: {
+        filterGrid: "max-content 1fr 1fr",
       },
     },
 

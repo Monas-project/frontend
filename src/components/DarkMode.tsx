@@ -19,7 +19,7 @@ const DarkModeButton = () => {
     }
 
     return (
-        <button className='absolute right-1/2 top-1/2' onClick={e => theme === 'dark' ? setTheme('light') : setTheme('dark')}>
+        <button className='absolute left-1/2 top-20' onClick={e => theme === 'dark' ? setTheme('light') : setTheme('dark')}>
             {theme === 'dark' ? 
                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M29.999 15.9656C29.999 23.6973 23.7312 29.9651 15.9995 29.9651C8.2678 29.9651 2 23.6973 2 15.9656C2 8.23386 8.2678 1.96606 15.9995 1.96606C23.7312 1.96606 29.999 8.23386 29.999 15.9656Z" fill="#FCD53F" />

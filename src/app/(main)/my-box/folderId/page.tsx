@@ -89,7 +89,7 @@ const Folder = (props: any) => {
     // <DataProvider>
     <div className="space-y-1rem">
 
-      <div className="text-black01 text-heading flex">
+      <div className="text-heading flex">
         <a href='../my-box' className='text-gray02 hover:bg-pink03'>Own Space</a>
         <span className='mx-0.5rem flex items-center justify-center '>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#757575" d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" /></svg>
@@ -97,7 +97,7 @@ const Folder = (props: any) => {
         <span>Folder1</span>
       </div>
 
-      <div className='w-full flex flex-row justify-between items-center font-normal text-black02'>
+      <div className='w-full flex flex-row justify-between items-center font-normal'>
         <div className='flex flex-row space-x-0.5rem'>
           <div className='flex border rounded-md items-center h-2.5rem'>
             <span className='w-0.5rem'></span>

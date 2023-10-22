@@ -1,9 +1,14 @@
 "use client";
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import DarkModeButton from '@/components/DarkMode';
 import {
     Box24Regular,
     BoxCheckmark24Regular,
+    BoxSearch24Regular,
+    PeopleCommunity24Regular,
+    Box24Filled,
+    BoxCheckmark24Filled,
     BoxSearch24Filled,
     PeopleCommunity24Filled,
 } from "@fluentui/react-icons";
@@ -24,53 +29,48 @@ export const NavigationSidebar = () => {
     const pathname = usePathname();
 
     const navContents = [
-        { name: 'My Box', href: '/my-box', icon: Box24Regular },
-        { name: 'Shared Box', href: '/shared-box', icon: BoxCheckmark24Regular },
-        { name: 'Get Box', href: '/get-box', icon: BoxSearch24Filled },
-        { name: 'Friend List', href: '/friend-list', icon: PeopleCommunity24Filled },
+        { name: 'My Box', href: '/my-box', iconA: Box24Filled, iconB: Box24Regular },
+        { name: 'Shared Box', href: '/shared-box', iconA: BoxCheckmark24Filled, iconB: BoxCheckmark24Regular },
+        { name: 'Get Box', href: '/get-box', iconA: BoxSearch24Filled, iconB: BoxSearch24Regular },
+        { name: 'Friend List', href: '/friend-list', iconA: PeopleCommunity24Filled, iconB: PeopleCommunity24Regular },
     ];
 
-    const maskStyle = {
-        WebkitMaskImage: `url('/monasLogo.png')`,
-        maskImage: `url('/monasLogo.png')`,
-        WebkitMaskRepeat: 'no-repeat',
-        maskRepeat: 'no-repeat',
-        WebkitMaskSize: 'cover',
-        maskSize: 'cover',
-        backgroundColor: '#FF4185',
-    };
-
     return (
-        <div className="h-full">
-            <div className='h-full flex flex-col justify-center bg-pink03 rounded-r-xl text-black01 font-SegoeUI font-normal space-y-1.25rem relative'>
-
-                <div className="w-23% aspect-[336/340] absolute top-11.5% m-auto left-0 right-0">
-                    <div
-                        className="w-full h-full"
-                        style={maskStyle}
-                    />
-                </div>
-
-                {navContents.map((item) => (
-                    <div key={item.name}
-                        className={`relative flex space-x-1.25rem py-0.5rem ml-1rem rounded-l-full items-center pl-1.25rem
-                        ${pathname === item.href ? 'bg-pink02 text-pink01' : 'hover:text-pink01'}`}>
-
-                        <div className='flex flex-none items-center justify-center'>
-                            <item.icon className='h-1rem w-r1em' aria-hidden='true' />
-                        </div>
-
-                        <div className='flex items-center'>
-                            <Link href={item.href}
-                            >
-                                {item.name}
-                                <span className='absolute inset-0'></span>
-                            </Link>
-                        </div>
-
-                    </div>
-                ))}
+        <div className='h-full w-sideberWidth flex flex-col flex-none justify-center space-y-4 px-2.5 border-r-1 sticky top-0
+                        border-lightContentsBorder
+                        dark:border-darkContentsBorder'>
+            <div className='absolute top-7 left-7'>
+                <svg xmlns="http://www.w3.org/2000/svg" className='h-navLogoType w-auto fill-pink01' viewBox="0 0 893.9 236.87">
+                    <use xlinkHref="/logoType.svg#logoType" />
+                </svg>
             </div>
+            <div className='absolute bottom-40 left-auto right-1/2'>
+                <DarkModeButton />
+            </div>
+
+            {navContents.map((item) => (
+                <div key={item.name}
+                    className={`relative flex rounded items-center border space-x-5 text-14
+                                border-lightItemBorder border-opacity-0 bg-darkBg bg-opacity-0
+                                dark:border-darkItemBorder dark:border-opacity-0 dark:bg-lightBg dark:bg-opacity-0
+                                
+                        ${pathname === item.href ?
+                        'border-opacity-100 bg-opacity-5 hover:bg-opacity-10 dark:border-opacity-100 dark:bg-opacity-10 dark:hover:bg-opacity-20 ' :
+                        'hover:bg-opacity-5 dark:hover:bg-opacity-5'}`}
+                >
+
+                    <div className='flex flex-none items-center justify-center mx-5 my-2.5'>
+                        {pathname === item.href ? <item.iconA aria-hidden='true' /> : <item.iconB aria-hidden='true' />}
+                    </div>
+                    <div className='flex items-center'>
+                        <Link href={item.href}>
+                            {item.name}
+                            <span className='absolute inset-0'></span>
+                        </Link>
+                    </div>
+
+                </div>
+            ))}
         </div>
     )
 }

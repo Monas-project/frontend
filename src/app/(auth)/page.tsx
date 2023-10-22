@@ -76,154 +76,57 @@ export default function Home() {
   };
 
   return (
-    // <DataProvider>
-    <div className='bg-cover h-screen w-screen flex flex-col justify-center font-SegoeUI font-semibold
-                    bg-homeBgLight text-lightFont
-                    dark:bg-homeBgDark dark:text-darkFont'>
-      <div className='w-2/5 h-3/5 m-3.5 sm:w-full'>
+    <div className='h-screen w-screen bg-cover font-semibold
+                    bg-homeBgLight
+                    dark:bg-homeBgDark'>
 
-        <div className='w-full'>
-          <h1 className='text-h1'>Welcme to Monas<span className='text-pink01'>.</span></h1>
-          <h2 className='text-h2 font-normal'>Give you the power of data and<br />the future is yours to decide!</h2>
-        </div>
+      <div className='absolute top-7 left-7'>
+        <svg xmlns="http://www.w3.org/2000/svg" className='h-logoType w-auto fill-pink01' viewBox="0 0 893.9 236.87">
+          <use xlinkHref="/logoType.svg#logoType" />
+        </svg>
+      </div>
 
-        <div>
-          <button className='w-54 py-buttonPy rounded-full bg-pink01 text-white hover:bg-pink01Hover transition duration-300 ease-in-out'
-            onClick={connectWallet}
-            disabled={connecting}>
-            {connecting ? 'Connecting...' : 'Connect Wallet'}
+      <div className='absolute bottom-7 right-7'>
+        <svg xmlns="http://www.w3.org/2000/svg" className='h-logoMark w-auto fill-white' viewBox="0 0 338.9 335.4">
+          <use xlinkHref="/logoMark.svg#logoMark" />
+        </svg>
+      </div>
+      
+      <div className='w-1/2 h-full flex justify-center'>
+        <div className='space-y-60.8 w-auto flex flex-col justify-center'>
+          <div className='space-y-5'>
+            <h1 className='text-h1'>Welcome to Monas<span className='text-pink01 text-8xl'>&#46;</span></h1>
+            <h2 className='font-normal text-h2'>Give you the power of data and <br />the future is yours to decide!</h2>
+          </div>
+
+          <button onClick={connectWallet} disabled={connecting}
+            className='w-299.2 py-2.5 text-white text-base bg-pink01 rounded-full'
+          >
+            {connecting ? 'Connecting...' : 'Sign up'}
           </button>
-        </div>
 
-        <div className='w-54'>
-
-          <div className='w-full justify-center items-center inline-flex space-x-3'>
-            <div className='h-px grow bg-lightFont'></div>
-            <div className='mx-3.5%'>or</div>
-            <div className='h-px grow bg-lightFont'></div>
-
+          <div className='w-299.2 space-x-2.5 flex items-center'>
+            <div className='h-px w-full
+                            bg-lightFont
+                            dark:bg-darkFont'></div>
+            <div className='font-normal text-base'>or</div>
+            <div className='h-px w-full
+                            bg-lightFont
+                            dark:bg-darkFont'></div>
           </div>
 
-          <p>Already have an account?</p>
-
-          <div>
-
-            <form onSubmit={handleLogin} className=''>
-
-              <label htmlFor='rootId'
-                className='relative block rounded-lg border-4 border-transparent
-                                bg-lightInputBg focus-within:border-lightInputOutline 
-                                dark:bg-darkInputBg dark:focus-within:border-darkInputOutline'>
-                <input id='rootId' name='rootId' type='text' value={rootId} onChange={handleInputChange} placeholder=''
-                  className='px-inputPx pt-inputPt pb-inputPb rounded-lg bg-inherit outline-none border border-transparent w-full h-full
-                            focus-within:border-pink01
-                            focus-within:bg-lightInputActiveBg
-                            dark:focus-within:bg-darkInputActiveBg' />
-                <span dir='Itr'
-                  className=' absolute left-placefolderL top-placefolderT whitespace-nowrap transition-all duration-200
-                              text-lightInputFont
-                              dark:text-darkInputFont'>
-                  Root ID
-                </span>
-              </label>
-
-              <label htmlFor='rootKey'
-                className='relative block rounded-lg border-4 border-transparent
-                          bg-lightInputBg focus-within:border-lightInputOutline 
-                          dark:bg-darkInputBg dark:focus-within:border-darkInputOutline'>
-                <input id='rootKey' name='rootKey' type='password' value={rootKey} onChange={handleInputChange} placeholder=''
-                  className='px-inputPx pt-inputPt pb-inputPb rounded-lg bg-inherit outline-none border border-transparent w-full h-full
-                            focus-within:border-pink01
-                            focus-within:bg-lightInputActiveBg
-                            dark:focus-within:bg-darkInputActiveBg' />
-                <span dir='Itr'
-                  className=' absolute left-placefolderL top-placefolderT whitespace-nowrap transition-all duration-200
-                              text-lightInputFont
-                              dark:text-darkInputFont'>
-                  Root Key
-                </span>
-              </label>
-
-            </form>
-
-          </div>
-
-          <div>
-            <button type='submit'
-              className='text-pink01 w-full border rounded-full py-buttonPy hover:bg-pink02 transition
-                              bg-lightBg border-lightBorder
-                              dark:bg-darkBg dark:border-darkBorder'>
+          <div className='space-y-10'>
+            <p>Already have an account?</p>
+            <button type="submit"
+              className='w-299.2 py-2.5 text-pink01 text-base rounded-full border
+                        border-lightLoginBtnBorder
+                        dark:border-darkContentsBorder'
+            >
               {isLoggedIn ? 'Logged In' : 'Log In'}
             </button>
           </div>
         </div>
       </div>
     </div>
-
-    /*     <div className="bg-titleBg bg-cover h-screen w-screen flex flex-col justify-center text-black01 font-SegoeUI font-semibold">
-          <div className='w-1/2 h-4/5 grid grid-auto-rows-auto gap-6% p-3.5%'>
-            <div>
-              <h1 className=" text-h1">Welcome to Monas</h1>
-              <h2 className=" text-h2">
-                Give you the power of data and<br />
-                the future is yours to decide!
-              </h2>
-            </div>
-            <button className="py-2 w-1/2 text-button text-white bg-pink01 rounded-full hover:bg-pink01Hover transition duration-300 ease-in-out"
-              onClick={connectWallet}
-              disabled={connecting}
-            >
-              {connecting ? 'Connecting...' : 'Connect Wallet'}
-            </button>
-    
-            <div className='w-1/2 justify-center items-center inline-flex'>
-              <div className="h-px grow bg-black01"></div>
-              <div className='mx-3.5%'><span>or</span></div>
-              <div className="h-px grow bg-black01"></div>
-            </div>
-    
-    
-            <div className=" w-1/2 space-y-6%">
-              <p className=''>Already have an account?</p>
-              <form onSubmit={handleLogin} className="space-y-6%">
-                <div className="space-y-4%">
-                  <label className="relative block p-3.5% text-label text-gray01 bg-white border rounded border-gray01 focus-within:border-pink01" htmlFor="rootId">
-                    <input
-                      className="outline-none pt-3.5% focus:border-pink01 w-full text-black01"
-                      id="rootId"
-                      name="rootId"
-                      type="text"
-                      value={rootId}
-                      onChange={handleInputChange}
-                      placeholder=" "
-                    />
-                    <span dir='Itr' className='absolute left-4% top-30% text-gray01 transition-all duration-300 pointer-events-none whitespace-nowrap'>Root ID</span>
-                  </label>
-    
-                  <label className="relative block p-3.5% text-label text-gray01 bg-white border rounded border-gray01 focus-within:border-pink01" htmlFor="rootId">
-                    <input
-                      className="outline-none pt-3.5% focus:border-pink01 w-full text-black01"
-                      id="rootKey"
-                      name="rootKey"
-                      type="password"
-                      value={rootKey}
-                      onChange={handleInputChange}
-                      placeholder=" "
-                    />
-                    <span dir='Itr' className='absolute left-4% top-30% text-gray01 transition-all duration-300 pointer-events-none whitespace-nowrap'>Root Key</span>
-                  </label>
-                </div>
-    
-                <button className="py-2 w-full text-button text-pink01 bg-white border rounded-full border-pink01 hover:bg-pink02 transition duration-300 ease-in-out"
-                  type="submit"
-                >
-                  {isLoggedIn ? 'Logged In' : 'Log In'}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div> */
-    // </DataProvider>
-
   );
 }
