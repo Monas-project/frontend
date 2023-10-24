@@ -6,7 +6,7 @@ export type uploadAPIReq = {
   id: string;
   path: string;
   isDirectory: boolean;
-  data_cid: string;
+  data: string;
 };
 
 export type uploadAPIRes = {
@@ -20,7 +20,7 @@ export const uploadFolderAPI = async (request: uploadAPIReq) => {
     id: request.id,
     path: request.path,
     isDirectory: request.isDirectory,
-    data_cid: request.data_cid,
+    data: request.data
   };
   const body = JSON.stringify(req);
   console.log("Upload body: ", body);

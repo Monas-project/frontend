@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { use, useEffect, useState, Fragment } from 'react';
 import Files from "@/components/Files";
 import { useDataContext } from "@/context/metaData";
+import { useWalletContext } from "@/context/ownerAddress";
 import { uploadFolderAPI } from "@/utils/api/uploadFolder";
 import { uploadFileAPI } from "@/utils/api/uploadFile";
 import { fetchAPI } from "@/utils/api/fetch";
@@ -39,7 +40,9 @@ const MyBox = () => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const { root, setRoot } = useDataContext();
+  const { walletData } = useWalletContext();
   const [rootId, setRootId] = useState('');
+  console.log("walletData", walletData.address)
   console.log("root", root)
   const childData = root?.child || {};
   console.log("childData", childData)
@@ -61,19 +64,10 @@ const MyBox = () => {
     getRoot();
   }, [])
 
-  // const root = {
-  //   "name": "Root",
-  //   "owner": "0x123...576",
-  //   "creation_date": "",
-  //   "location": "", 
-  //   "parent": { "name": "", "location": "" },
-  //   "child": [
-  //       { "name": "AAAAAAAAAAAAAAAAFile1", "isFile": true, "creation_date": "2023-09-09", "location": "file1.location" },
-  //       { "name": "File2", "isFile": true, "creation_date": "2023-10-09","location": "file2.location" },
-  //       { "name": "Folder1", "isFile": false, "creation_date": "2009-09-09","location": "folder2.location" },
-  //       { "name": "Folder2", "isFile": false, "creation_date": "2002-01-04","location": "folder2.location" },
-  //   ]
-  // };
+  useEffect(() => {
+    console.log("walletData", walletData)
+    if (!walletData || !walletData.address) router.push(`/`);
+  }, [])
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [nextPath, setNextPath] = useState<string>('');
@@ -92,19 +86,12 @@ const MyBox = () => {
 
   const nextData = async (path: string) => {
     console.log("直前nextData currentPath", currentPath)
-    // const folderId = "38745683465";
-    // router.push(`/my-box`);
     console.log("NEXT path", path)
-    // const fetchPath = pathToString(path)
-    // console.log("NEXT path", fetchPath)
     const data: any = await fetchAPI(path);
     console.log("NEXT fetch後data", data)
     setRoot(data);
-    // const nextPath = addItem(data.name);
     setCurrentPath([...currentPath, data.name]);
     console.log("後nextData currentPath", currentPath)
-    // setCurrentPath()
-    // addItem(data.name);
   };
 
   const backData = async () => {
@@ -243,39 +230,93 @@ const MyBox = () => {
     uploadFile(e.target.files[0]);
   };
 
-  // フォルダアップロード
-  const handleCreateFolder = async (e: any) => {
+  // // フォルダアップロード
+  // const handleCreateFolder = async (e: any) => {
+  //   if (!folderName) {
+  //     alert('必要な情報を入力してください');
+  //     return;
+  //   }
+
+  //   const pathForPush = [...currentPath]
+  //   pathForPush.push(folderName)
+  //   const path = pathToString(pathForPush)
+
+  //   const formattedData = {
+  //     name: folderName || "",
+  //     id: walletData?.address || "",
+  //     path: path || "",
+  //     isDirectory: true,
+  //     data: "",
+  //   };
+  //   console.log("formattedData", formattedData)
+
+  //   // データを使って必要な処理を実行する（例：API呼び出し、データの保存など）
+  //   try {
+  //     const data: any = await uploadFolderAPI(formattedData);
+  //     console.log("metadata", data);
+
+  //     setRoot(data);
+  //     // router.push(`/my-box?cid=${rootId}`);
+  //   } catch (error) {
+  //     console.error('UploadFolder error:', error);
+  //   }
+  //   console.log("フォルダupload", currentPath)
+
+  //   closeFolderPopup();
+  // };
+  const handleCreateFolder = async () => {
     if (!folderName) {
       alert('必要な情報を入力してください');
       return;
     }
 
+    // パスの組み立て
+    // const path = `${currentPath.join('/')}/${folderName}`;
     const pathForPush = [...currentPath]
     pathForPush.push(folderName)
     const path = pathToString(pathForPush)
 
-    const formattedData = {
-      name: folderName,
-      path: path,
-      isDirectory: true,
-      data_cid: "",
-    };
-    console.log("formattedData", formattedData)
+    const apiUrl = 'http://localhost:8000/upload';
 
-    // データを使って必要な処理を実行する（例：API呼び出し、データの保存など）
+    const formData = new FormData();
+    formData.append("name", folderName);
+    formData.append("id", walletData?.address || ""); // walletDataがnullの場合のためのフォールバック
+    formData.append("path", path);
+    formData.append("isDirectory", "true");
+    // formData.append("data", "");  // ここで実際のファイルオブジェクトを追加する場合、第二引数にファイルオブジェクトを指定します
+    const formDataEntries = Array.from(formData.entries());
+      for (let [key, value] of formDataEntries) {
+      console.log("formData");
+      console.log(key, value);
+    }
+    // const body = JSON.stringify(formData);
+    // console.log("body", body)
+    // console.log("apiUrl", apiUrl)
+
     try {
-      const data: any = await uploadFolderAPI(formattedData);
-      console.log("metadata", data);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
+        body: formData,
+      });
 
+      console.log("response", response)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
       setRoot(data);
       // router.push(`/my-box?cid=${rootId}`);
     } catch (error) {
-      console.error('UploadFolder error:', error);
+      console.error('フォルダのアップロード中にエラーが発生しました:', error);
     }
-    console.log("フォルダupload", currentPath)
 
     closeFolderPopup();
-  };
+  }
 
   const handleSahre = (location: string) => {
     openSharePopup();
