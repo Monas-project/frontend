@@ -1,10 +1,9 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Noto_Sans_Display } from 'next/font/google'
 import { DataProvider } from '@/context/metaData'
-import { Providers } from '../components/providers'
-import ResizeText from '../components/FontResize'
-import { Noto_Sans_Display } from 'next/font/google'
+import { WalletProvider } from '@/context/ownerAddress'
+import { Providers } from '../components/darkMode/providers'
 
 const inter = Inter({ subsets: ['latin'] })
 const notoSansDisplay = Noto_Sans_Display({ subsets: ['latin'] })
@@ -23,13 +22,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${notoSansDisplay.className} ${inter.className}`}>
         <DataProvider>
-          <Providers>
-            {/* <ResizeText> */}
-            <div className='text-lightFont bg-lightBg dark:text-darkFont dark:bg-darkBg select-none'>
-              {children}
-            </div>
-            {/* </ResizeText> */}
-          </Providers>
+          <WalletProvider>
+            <Providers>
+              <div className='text-lightFont dark:text-darkFont'>
+                {children}
+              </div>
+            </Providers>
+          </WalletProvider>
         </DataProvider>
       </body>
     </html>

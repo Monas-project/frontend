@@ -82,13 +82,15 @@ const config: Config = {
         h2: "1.688rem",
 
         base: "1.063rem",
-        folderTitle: "1.25rem",
+        title: "1.25rem",
 
         recentContentsDate: "0.75rem",
 
         tableTh: "1.0625rem",
 
         "14": "0.875rem",
+
+        xl: "1.375rem",
       },
 
       lineHeight: {
@@ -113,6 +115,11 @@ const config: Config = {
 
       width: {
         welcomeCatWidth: "23.6%",
+      },
+
+      height: {
+        tdHeight: "3.125rem",
+        buttonHeight: "2.9375rem",
       },
 
       minWidth: {

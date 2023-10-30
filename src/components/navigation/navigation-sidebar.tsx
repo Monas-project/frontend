@@ -1,7 +1,6 @@
 "use client";
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import DarkModeButton from '@/components/DarkMode';
 import {
     Box24Regular,
     BoxCheckmark24Regular,
@@ -45,7 +44,6 @@ export const NavigationSidebar = () => {
                 </svg>
             </div>
             <div className='absolute bottom-40 left-auto right-1/2'>
-                <DarkModeButton />
             </div>
 
             {navContents.map((item) => (

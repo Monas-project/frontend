@@ -9,25 +9,26 @@ const GetBox = () => {
 
   return (
 
-    <div className="space-y-1rem">
-      <h1 className="text-heading">Get Box</h1>
-      <div>
-        <label className="block text-white-700 text-sm mb-2">
-          URI :
-        </label>
-        <textarea className="mt-1 block text-gray-700 w-full border border-gray-700 rounded"></textarea>
-        <label className="block text-white-700 text-sm mb-2">
-          Secret Key :
-        </label>
-        <textarea className="mt-1 block text-gray-700 w-full border border-gray-700 rounded"></textarea>
+    <div>
+      <div className='h-serchbarHeight' />
+      <div className='px-9 py-4'>
+        <h1 className='text-folderTitle'>Get Box</h1>
+
+        <div className='flex flex-col'>
+          <label className="">URI :</label>
+          <textarea className="border border-pink01"></textarea>
+
+          <label className="">Secret Key :</label>
+          <textarea className="border border-pink01"></textarea>
+        </div>
+
+        <button onClick={getData} className="bg-pink01">Enter</button>
+        {data && <div>{data}</div>}
       </div>
-      <button onClick={getData}
-        className="py-2 w-1/5 text-button text-white bg-pink01 rounded hover:bg-pink01Hover transition duration-300 ease-in-out"
-      >
-        Enter
-      </button>
-      {data && <div>{data}</div>}
     </div>
+
+
+
   )
 }
 export default GetBox;
