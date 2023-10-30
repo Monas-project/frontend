@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { use, useEffect, useState, Fragment, useRef } from 'react';
 import Files from "@/components/Files";
 import { useDataContext } from "@/context/metaData";
-import { useWalletContext} from "@/context/ownerAddress";
+import { useWalletContext } from "@/context/ownerAddress";
 import { uploadFolderAPI } from "@/utils/api/uploadFolder";
 import { uploadFileAPI } from "@/utils/api/uploadFile";
 import { fetchAPI } from "@/utils/api/fetch";
@@ -69,7 +69,7 @@ const MyBox = () => {
 
   useEffect(() => {
     console.log("walletData", walletData)
-    if (!walletData || !walletData.address) router.push('/');
+    if (!walletData || !walletData.address) router.push(`/`);
   }, [])
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
@@ -286,7 +286,7 @@ const MyBox = () => {
     formData.append("isDirectory", "true");
     // formData.append("data", "");  // ここで実際のファイルオブジェクトを追加する場合、第二引数にファイルオブジェクトを指定します
     const formDataEntries = Array.from(formData.entries());
-    for (let [key, value] of formDataEntries) {
+      for (let [key, value] of formDataEntries) {
       console.log("formData");
       console.log(key, value);
     }
@@ -315,8 +315,9 @@ const MyBox = () => {
     } catch (error) {
       console.error('フォルダのアップロード中にエラーが発生しました:', error);
     }
+
     closeFolderPopup();
-  };
+  }
 
   const handleSahre = (location: string) => {
     openSharePopup();
