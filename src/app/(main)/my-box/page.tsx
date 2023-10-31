@@ -3,7 +3,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image';
-import { use, useEffect, useState, Fragment } from 'react';
+import { use, useEffect, useState, Fragment, useRef } from 'react';
 import Files from "@/components/Files";
 import { useDataContext } from "@/context/metaData";
 import { useWalletContext } from "@/context/ownerAddress";
@@ -29,8 +29,11 @@ import {
   Share16Regular,
   Delete16Regular,
   Key16Regular,
+
+  Copy20Regular,
 } from '@fluentui/react-icons';
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, Transition, Dialog } from '@headlessui/react';
+import DragDrop from '@/components/DragDrop';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -109,8 +112,6 @@ const MyBox = () => {
     setCurrentPath(pathForPop)
     console.log("後backData currentPath", currentPath)
   }
-
-
 
   const pathToString = (array: string[]) => {
     return '/' + array.join('/');
@@ -325,8 +326,6 @@ const MyBox = () => {
     // delete処理
   };
 
-
-  const filterBtnContents = ['Type', 'People', 'Modified'];
   const filterTypeContents = [
     { name: 'documents', icon: <DocumentText24Filled /> },
     { name: 'Photos & images', icon: < Image24Filled /> },
@@ -335,6 +334,7 @@ const MyBox = () => {
     { name: 'Folders', icon: <Folder24Filled /> },
     { name: 'Archives', icon: <FolderZip24Filled /> },
   ];
+
   const recentContents = [
     { content: "", title: "aaaaaaaaaaaaaa", date: "3 days ago" },
     { content: "", title: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", date: "20 days ago" },
@@ -342,13 +342,17 @@ const MyBox = () => {
     { content: "", title: "ddddd", date: "7 months ago" },
     { content: "", title: "eeeeeeeeeeeeeeeeeeeeeee", date: "11 months ago" },
   ];
+
+  // フォルダーtableの表題
   const fileTableTr = [
-    { key: 'folder', th: '', width: '0' },
+    { key: 'folder', th: '', width: '0%' },
     { key: 'name', th: 'Name', width: '63.7%' },
     { key: 'owner', th: 'Owner', width: '12%' },
     { key: 'dataModified', th: 'Data Modified', width: '13.7%' },
     { key: 'action', th: '', width: '10.6%' },
   ];
+
+  // アクションボタン
   const fileTableAction = [
     { icon: <ArrowDownload16Regular />, alt: 'Download', onclick: handleDownload },
     { icon: <Share16Regular />, alt: 'Share', onclick: handleSahre },
@@ -356,170 +360,165 @@ const MyBox = () => {
     { icon: <Key16Regular />, alt: 're-encryt', onclick: '' },
   ];
 
+  // Upload File, Create Folder - inputが未入力
+  const isExistFileName = !!RegExp(/[^\n]/).exec(fileName);
+  const isExistFolderName = !!RegExp(/[^\n]/).exec(folderName);
+
+  let changeFocusRef = useRef(null);
+
+  // クリップボードにコピー
+  const share_key = "BvOA9Fxk4lsa7TeUiGWBDnoJbZ3UPXk69nxiitoyMyQ=";
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(share_key);
+      alert('Coppied to clipboard.');
+    } catch (err) {
+      alert('Failed to copy to clipboard.');
+      console.error(err);
+    }
+  };
+
   return (
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
       <div className='sticky top-0'>
         <Searchbar />
         <div className='border-b-1 px-9 py-4 space-y-3
-                      bg-lightBg border-lightContentsBorder 
-                      dark:bg-darkBg dark:border-darkContentsBorder'>
+                      border-lightContentsBorder 
+                      dark:border-darkContentsBorder'>
           <div className='flex flex-rows items-center justify-between'>
-            <h1 className='text-folderTitle'>Own Space</h1>
+            <h1 className='text-title'>Own Space</h1>
             <div className='flex flex-row'>
               <p>{pathToString(currentPath)}</p>
               <button
                 onClick={backData}
-                className="text-lg text-gray-600 font-semibold mb-4"
+                className=""
               >Back
               </button>
             </div>
-            <button><Grid16Filled /></button>
+            <button title='girid or list' type='button'><Grid16Filled /></button>
           </div>
           <div className='flex flex-rows justify-between items-center text-14'>
             {/* フィルターボタン 3つ */}
             <div className='flex flex-row space-x-2.5'>
-              {/* <div className='flex flex-rows'>
-              {filterBtnContents.map((item) => (
-                <Menu id={item} as="div" className="relative ">
-                  <Menu.Button>
-                    {item}
-                    <CaretDown12Filled />
-                  </Menu.Button>
-                  <Menu.Items>
-                    <Menu.Item as="div">
-                      {(item === "Type") && "a"}
-                      {(item === "People") && "b"}
-                      {(item === "Modified") && "c"}
-                    </Menu.Item>
+              <Menu as="div" className="relative">
+                <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
+                  Type<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
+                </Menu.Button>
+
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95">
+                  <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
+                                        bg-lightDropDownBg ring-lightContentsBorder 
+                                        dark:bg-darkDropDownBg dark:ring-darkContentsBorder">
+                    <div className="p-2">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div className='grid grid-cols-filterGrid gap-5'>
+                            {filterTypeContents.map((item) => (
+                              <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
+                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
+                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                <div>{item.icon}</div>
+                                <div className='whitespace-nowrap'>{item.name}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </div>
                   </Menu.Items>
+                </Transition>
+              </Menu>
+              <Menu as="div" className="relative">
+                <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
+                  Piople<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
+                </Menu.Button>
 
-                </Menu>
-              ))}
-            </div> */}
-
-              <div>
-                <Menu as="div" className="relative">
-                  <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
-                    Type<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
-                  </Menu.Button>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95">
-                    <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95">
+                  <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
                                         bg-lightDropDownBg ring-lightContentsBorder 
                                         dark:bg-darkDropDownBg dark:ring-darkContentsBorder">
-                      <div className="p-2">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div className='grid grid-cols-filterGrid gap-5'>
-                              {filterTypeContents.map((item) => (
-                                <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
+                    <div className="p-2">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div className='grid grid-cols-filterGrid gap-5'>
+                            {filterTypeContents.map((item) => (
+                              <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
                                                             bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
                                                             hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
-                                  <div>{item.icon}</div>
-                                  <div className='whitespace-nowrap'>{item.name}</div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-              <div>
-                <Menu as="div" className="relative">
-                  <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
-                    Piople<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
-                  </Menu.Button>
+                                <div>{item.icon}</div>
+                                <div className='whitespace-nowrap'>{item.name}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+              <Menu as="div" className="relative">
+                <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
+                  Modified<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
+                </Menu.Button>
 
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95">
-                    <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95">
+                  <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
                                         bg-lightDropDownBg ring-lightContentsBorder 
                                         dark:bg-darkDropDownBg dark:ring-darkContentsBorder">
-                      <div className="p-2">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div className='grid grid-cols-filterGrid gap-5'>
-                              {filterTypeContents.map((item) => (
-                                <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
+                    <div className="p-2">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div className='grid grid-cols-filterGrid gap-5'>
+                            {filterTypeContents.map((item) => (
+                              <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
                                                             bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
                                                             hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
-                                  <div>{item.icon}</div>
-                                  <div className='whitespace-nowrap'>{item.name}</div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-              <div>
-                <Menu as="div" className="relative">
-                  <Menu.Button className="border border-lightItemBorder dark:border-darkItemBorder px-6 py-2 rounded-lg hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn">
-                    Modified<CaretDown12Filled aria-hidden="true" className='ml-3.5' />
-                  </Menu.Button>
-
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95">
-                    <Menu.Items className="absolute left-0 top-10 origin-top-left rounded-lg  shadow-lg ring-1 focus:outline-none 
-                                        bg-lightDropDownBg ring-lightContentsBorder 
-                                        dark:bg-darkDropDownBg dark:ring-darkContentsBorder">
-                      <div className="p-2">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <div className='grid grid-cols-filterGrid gap-5'>
-                              {filterTypeContents.map((item) => (
-                                <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
-                                  <div>{item.icon}</div>
-                                  <div className='whitespace-nowrap'>{item.name}</div>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </Menu.Item>
-                      </div>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-              </div>
-
-
+                                <div>{item.icon}</div>
+                                <div className='whitespace-nowrap'>{item.name}</div>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
             </div>
+
             {/* UploadFile,CreateFolderボタン */}
             <div className='flex flex-row space-x-2.5'>
-              <button onClick={openFilePopup} className='flex justify-center px-6 py-3 rounded-lg border
+              <button type='button'
+                onClick={openFilePopup}
+                className='flex justify-center px-6 py-3 rounded-lg border
                                                         border-lightItemBorder hover:bg-lightHoverBtn 
                                                         dark:border-darkItemBorder dark:hover:bg-darkHoverBtn'>
                 <DocumentArrowUp20Regular className='mr-3.5' />
                 Upload File
               </button>
+
               <button onClick={openFolderPopup} className='flex justify-center px-6 py-3 rounded-lg border
                                                         border-lightItemBorder hover:bg-lightHoverBtn 
                                                         dark:border-darkItemBorder dark:hover:bg-darkHoverBtn'>
@@ -557,10 +556,10 @@ const MyBox = () => {
         {/* ファイル用テーブル */}
         <div className='grow text-left font'>
           {root?.child && Object.keys(root.child).length > 0 ? (
-            <table className='table-fixed'>
+            <table className='table-fixed w-full'>
               <thead>
                 <tr>{fileTableTr.map((x) => (
-                  <th key={x.key} style={{ width: x.width }} className='py-1.5 first:pl-7 last:pr-7 font-normal text-tableTh'>
+                  <th key={x.key} style={{ width: x.width }} className='py-1.5 first:absolute [&:nth-child(2)]:pl-7 last:pr-7 font-normal text-tableTh'>
                     {x.th}
                   </th>
                 ))}</tr>
@@ -568,28 +567,28 @@ const MyBox = () => {
               <tbody>
                 {Object.entries(root?.child).map(([path, item], index) => (
                   <tr key={index}
-                    className='group border border-x-transparent hover:border-y-[2px] hover:border-pink01 
+                    className='group border-y hover:outline hover:outline-1 hover:outline-pink01 relative
                     border-y-lightTableBorder hover:bg-lightHoverTrBg
                     dark:border-y-darkTableBorder dark:hover:bg-darkHoverTrBg
                     [&_td]:pr-3 [&_td]:py-[0.797rem] [&_td]:truncate'>
 
                     {/* File,Folder */}
-                    <td style={{ overflow: 'visible', paddingTop: "0.48rem", paddingLeft: '1.75rem'/* 28px - 表題と同じ*/ }}>
+                    <td className='absolute' style={{ overflow: 'visible', paddingTop: "0.48rem", paddingLeft: '1.75rem'/* 28px - 表題と同じ*/ }}>
                       {!item.is_directory ? (
-                        <button className='text-document pt-[0.18rem]'>
+                        <button title='file' type='button' className='text-document pt-[0.18rem]'>
                           <a href={"https://gateway.pinata.cloud/ipfs/" + item.cid} target="_blank">
                             <DocumentText24Filled />
                           </a>
                         </button>
                       ) : (
-                        <button onClick={() => nextData(path)} className='text-folder pt-[0.18rem]'>
+                        <button title='file' type='button' onClick={() => nextData(path)} className='text-folder pt-[0.18rem]'>
                           <Folder24Filled />
                         </button>
                       )}
                     </td>
 
                     {/* Name */}
-                    <td className='pl-12'>
+                    <td className='pl-20'>
                       {!item.is_directory ? (
                         <div>
                           {item.name}
@@ -599,7 +598,7 @@ const MyBox = () => {
                       )}
                     </td>
 
-                    {/* DataModified */}
+                    {/* Owner */}
                     <td>{item.metadata_cid}</td>
 
                     {/* DataModified */}
@@ -607,23 +606,11 @@ const MyBox = () => {
 
                     {/* action */}
                     <td className='pr-7 text-center space-x-3.5' style={{ paddingTop: "0.5rem", paddingRight: '1.75rem'/* 28px - 表題と同じ*/ }}>
-                      {!item.is_directory ? (
-                        <>
-                          {fileTableAction.map((contents) => (
-                            <button key={contents.alt} onClick={contents.onclick} className='invisible group-hover:visible'>
-                              <div>{contents.icon}</div>
-                            </button>
-                          ))}
-                        </>
-                      ) : (
-                        <>
-                          {fileTableAction.map((contents) => (
-                            <button key={contents.alt} onClick={contents.onclick} className='invisible group-hover:visible'>
-                              <div>{contents.icon}</div>
-                            </button>
-                          ))}
-                        </>
-                      )}
+                      {fileTableAction.map((contents) => (
+                        <button key={contents.alt} onClick={contents.onclick} className='invisible group-hover:visible'>
+                          <div>{contents.icon}</div>
+                        </button>
+                      ))}
                     </td>
                   </tr>
                 ))}
@@ -652,374 +639,153 @@ const MyBox = () => {
         </div>
       </div>
 
+      {/* Upload File Dialog */}
+      <Transition appear show={isFilePopupOpen} as={Fragment}>
+        <Dialog as='div' initialFocus={changeFocusRef} onClose={closeFilePopup} className={'relative z-10'}>
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-darkBg/70' />
+          </Transition.Child>
 
-
-      {isFilePopupOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
-            <h2 className="text-heading font-semibold">Upload File</h2>
-
-            <div className='space-y-1.25rem'>
-              <input
-                type="file"
-                accept=".jpg, .jpeg, .png, .gif"
-                onChange={handleFileChange}
-                className=" file:bg-pink02 file:border-none file:py-0.5rem file:px-1.25rem file:rounded file:mr-2rem file:hover:bg-pink03"
-              />
-              {cid && (
-                <Files cid={cid} />
-              )}
-              <input
-                type="text"
-                placeholder="Name"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                className="mb-2 p-2 bg-pink02  focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
-              />
-            </div>
-
-            <div className='flex flex-row justify-between items-center'>
-              <button
-                onClick={uploadData}
-                className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
+          <div className="fixed inset-0">
+            <div className="flex min-h-full items-center justify-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
               >
-                add data
-              </button>
-              <button
-                onClick={closeFilePopup}
-                className="py-2 w-1/5 font-semibold text-button bg-white border rounded hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isFolderPopupOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem w-1/2">
-            <h2 className="text-heading font-semibold">Create Folder</h2>
-            <input
-              type="text"
-              placeholder="Name"
-              value={folderName}
-              onChange={(e) => setFolderName(e.target.value)}
-              className="mb-2 p-2 bg-pink02  focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
-            />
-
-            <div className='flex flex-row justify-between items-center'>
-              <button
-                onClick={handleCreateFolder}
-                className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
-              >
-                Create Folder
-              </button>
-              <button
-                onClick={closeFolderPopup}
-                className="py-2 w-1/5 font-semibold text-button bg-white border rounded hover:bg-gray-100"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isSharePopupOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
-            <h2 className="text-heading font-semibold">Keep The Key Secret</h2>
-            <h3 className="text-heading font-semibold">BvOA9Fxk4lsa7TeUiGWBDnoJbZ3UPXk69nxiitoyMyQ=</h3>
-            <button
-              onClick={closeSharePopup}
-              className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
-            >
-              OK
-            </button>
-
-          </div>
-        </div>
-      )}
-
-      <>
-        {/* <div className="space-y-1rem">
-        <h1>Own Space</h1>
-        <DarkModeButton />
-
-        <div>
-          <p>{pathToString(currentPath)}</p>
-          <button
-            onClick={backData}
-            className="text-lg text-gray-600 font-semibold mb-4"
-          >Back
-          </button>
-        </div>
-
-        <div className='flex flex-row justify-between items-center font-normal text-black02'>
-          <div className='flex flex-row space-x-0.5rem'>
-            <div className='flex border rounded-md items-center h-2.5rem'>
-              <span className='w-0.5rem'></span>
-              <label className='pl-2rem pr-1rem'>Type</label>
-              <span className='w-1.25rem h-1.25rem mr-2rem'>
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path d="M7 10l5 5 5-5H7z"></path>
-                </svg>
-              </span>
-            </div>
-            <div className='flex border rounded-md items-center h-2.5rem'>
-              <span className='w-0.5rem'></span>
-              <label className='pl-2rem pr-1rem'>People</label>
-              <span className='w-1.25rem h-1.25rem mr-2rem'>
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path d="M7 10l5 5 5-5H7z"></path>
-                </svg>
-              </span>
-            </div>
-            <div className='flex border rounded-md items-center h-2.5rem'>
-              <span className='w-0.5rem'></span>
-              <label className='pl-2rem pr-1rem'>Modified</label>
-              <span className='w-1.25rem h-1.25rem mr-2rem'>
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path d="M7 10l5 5 5-5H7z"></path>
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          <div className='flex flex-row-reverse space-x-4%'>
-            <button className="flex border rounded-md items-center h-4rem whitespace-nowrap ml-0.5rem"
-              onClick={openFolderPopup}
-            >
-              <span className='w-1.25rem h-1.25rem ml-2rem'>
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path fill='#FF4185' d="M3.5 6.25V8h4.629a.75.75 0 0 0 .53-.22l1.53-1.53l-1.53-1.53a.75.75 0 0 0-.53-.22H5.25A1.75 1.75 0 0 0 3.5 6.25Zm-1.5 0A3.25 3.25 0 0 1 5.25 3h2.879a2.25 2.25 0 0 1 1.59.659L11.562 5.5h7.189A3.25 3.25 0 0 1 22 8.75v4.06a6.518 6.518 0 0 0-1.5-1.078V8.75A1.75 1.75 0 0 0 18.75 7h-7.19L9.72 8.841a2.25 2.25 0 0 1-1.591.659H3.5v8.25c0 .966.784 1.75 1.75 1.75h6.063c.173.534.412 1.037.709 1.5H5.25A3.25 3.25 0 0 1 2 17.75V6.25ZM23 17.5a5.5 5.5 0 1 0-11 0a5.5 5.5 0 0 0 11 0Zm-5 .5l.001 2.503a.5.5 0 1 1-1 0V18h-2.505a.5.5 0 0 1 0-1H17v-2.5a.5.5 0 1 1 1 0V17h2.497a.5.5 0 0 1 0 1H18Z" />
-                </svg>
-              </span>
-              <p className='pl-1rem pr-2rem'>Create Folder</p>
-              <span className='w-0.5rem'></span>
-            </button>
-            <button className="flex border rounded-md items-center h-4rem whitespace-nowrap"
-              onClick={openFilePopup}
-            >
-              <span className='w-1.25rem h-1.25rem ml-2rem'>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 20 20">
-                  <path fill='#FF4185' d="M6 2a2 2 0 0 0-2 2v5.207a5.48 5.48 0 0 1 1-.185V4a1 1 0 0 1 1-1h4v3.5A1.5 1.5 0 0 0 11.5 8H15v8a1 1 0 0 1-1 1h-3.6a5.507 5.507 0 0 1-.657 1H14a2 2 0 0 0 2-2V7.414a1.5 1.5 0 0 0-.44-1.06l-3.914-3.915A1.5 1.5 0 0 0 10.586 2H6Zm8.793 5H11.5a.5.5 0 0 1-.5-.5V3.207L14.793 7ZM5.5 19a4.5 4.5 0 1 0 0-9a4.5 4.5 0 0 0 0 9Zm2.354-4.854a.5.5 0 1 1-.708.708L6 13.707V16.5a.5.5 0 0 1-1 0v-2.793l-1.146 1.147a.5.5 0 1 1-.708-.707l2-2A.5.5 0 0 1 5.497 12h.006a.498.498 0 0 1 .348.144l.003.003l2 2Z" />
-                </svg>
-              </span>
-              <p className='pl-1rem pr-2rem'>Upload File</p>
-              <span className='w-0.5rem'></span>
-            </button>
-          </div>
-        </div>
-        <div className='font-normal'>
-          <h2 className='mb-1rem'>Suggested</h2>
-          <div className='flex flex-wrap justify-between gap-4 h-13rem overflow-hidden'>
-            <div className='border rounded-md w-23% bg-gray-100'></div>
-            <div className='border rounded-md w-23% bg-gray-100'></div>
-            <div className='border rounded-md w-23% bg-gray-100'></div>
-            <div className='border rounded-md w-23% bg-gray-100'></div>
-          </div>
-        </div>
-
-        {root?.child && Object.keys(root.child).length > 0 ? (
-          <table className=" text-left">
-            <thead>
-              <tr className='border-b border-gray01'>
-                <th className="w-4.5% p-0.5rem font-normal">Name</th>
-                <th className="w-49% font-normal"></th>
-                <th className="w-11.5% font-normal">Owner</th>
-                <th className="w-20% font-normal">Data Modified</th>
-                <th className="w-15% font-normal">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(root?.child).map(([path, item], index) => (
-                <tr key={index}>
-                  <td className="p-0.5rem border-b border-gray01">
-                    {!item.is_directory ? (
-                      <a href={"https://gateway.pinata.cloud/ipfs/" + item.cid} target="_blank">
-                        <Image src="/document-24-filled.svg" alt="file" width={25} height={25} />
-                      </a>
+                <Dialog.Panel className="w-1/3 transform rounded-lg shadow-xl transition-all bg-lightBg dark:bg-darkDropDownBg dark:ring-1 dark:ring-darkContentsBorder">
+                  <div className='flex flex-col p-7 space-y-10' ref={changeFocusRef}>
+                    <Dialog.Title className={'text-title'}>Upload File</Dialog.Title>
+                    {cid ? (
+                      <Files cid={cid} />
                     ) : (
-                      <Image src="/folder-24-filled.svg" alt="folder" width={25} height={25} onClick={() => nextData(path)} />
+                      <DragDrop uploadFile={uploadFile} />
                     )}
-                  </td>
-                  {!item.is_directory ? (
-                    <td className="border-b border-gray01">{item.name}</td>
-                  ) : (
-                    <td className="border-b border-gray01" onClick={() => nextData(path)}>{item.name}</td>
-                  )}
-                  <td className="border-b border-gray01">{item.metadata_cid}</td>
-                  <td className="border-b border-gray01">{item.creation_date}</td>
-                  <td className="py-0.5rem border-b border-gray01 space-x-1rem">
-                    {!item.is_directory ? (
-                      <>
-                        <Image
-                          src="/arrow-download-24-regular.svg"
-                          alt="Download"
-                          width={20}
-                          height={20}
-                          onClick={() => handleDownload(item.location)}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/share-24-regular.svg"
-                          alt="Share"
-                          width={20}
-                          height={20}
-                          onClick={() => handleSahre()}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/delete-24-regular.svg"
-                          alt="Delete"
-                          width={20}
-                          height={20}
-                          onClick={() => handleDelete(item.location)}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/key-24-regular.svg"
-                          alt="re-encryt"
-                          width={20}
-                          height={20}
-                          className='inline-block'
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <Image
-                          src="/arrow-download-24-regular.svg"
-                          alt="Download"
-                          width={20}
-                          height={20}
-                          onClick={() => handleDownload(item.location)}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/share-24-regular.svg"
-                          alt="Share"
-                          width={20}
-                          height={20}
-                          onClick={() => handleSahre()}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/delete-24-regular.svg"
-                          alt="Delete"
-                          width={20}
-                          height={20}
-                          onClick={() => handleDelete(item.location)}
-                          className='inline-block'
-                        />
-                        <Image
-                          src="/key-24-regular.svg"
-                          alt="re-encryt"
-                          width={20}
-                          height={20}
-                          className='inline-block'
-                        />
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <h2 className="text-center text-gray-600">You don't have your data</h2>
-        )}
-        {isFilePopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
-            <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
-              <h2 className="text-heading font-semibold">Upload File</h2>
-              <div className='space-y-1.25rem'>
-                <input
-                  type="file"
-                  accept=".jpg, .jpeg, .png, .gif"
-                  onChange={handleFileChange}
-                  className=" file:bg-pink02 file:border-none file:py-0.5rem file:px-1.25rem file:rounded file:mr-2rem file:hover:bg-pink03"
-                />
-                {cid && (
-                  <Files cid={cid} />
-                )}
-                <input
-                  type="text"
-                  placeholder="Name"
-                  value={fileName}
-                  onChange={(e) => setFileName(e.target.value)}
-                  className="mb-2 p-2 bg-pink02  focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
-                />
-              </div>
 
-              <div className='flex flex-row justify-between items-center'>
-                <button
-                  onClick={uploadData}
-                  className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
-                >
-                  add data
-                </button>
-                <button
-                  onClick={closeFilePopup}
-                  className="py-2 w-1/5 font-semibold text-button bg-white border border-black01  rounded hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-
-              </div>
+                    <input type="text" placeholder="Enter file name" value={fileName} onChange={(e) => setFileName(e.target.value)}
+                      className='outline-none bg-transparent rounded-lg p-3 focus-within:border-pink01
+                        border border-lightItemBorder/20 placeholder:text-lightFont/35
+                        dark:border dark:border-darkItemBorder/20 placeholder:dark:text-darkFont/35 '/>
+                  </div>
+                  <div className='flex justify-between px-4 py-3 border-t-1 border-lightContentsBorder dark:border-darkContentsBorder [&>button]:px-7 [&>button]:py-2 [&>button]:rounded-lg'>
+                    <button onClick={closeFilePopup} className='hover:bg-darkBg/5 dark:hover:bg-lightBg/5'>Cancel</button>
+                    <button onClick={uploadData} className={`${isExistFileName ? 'text-white bg-pink01' : 'text-lightFont/[0.35] bg-darkBg/10 dark:text-darkFont/[0.35] dark:bg-lightBg/10'}`} disabled={!isExistFileName}>Add data</button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
             </div>
           </div>
-        )}
+        </Dialog>
+      </Transition>
 
-        {isFolderPopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
-            <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem w-1/2">
-              <h2 className="text-heading font-semibold">Create Folder</h2>
-              <input
-                type="text"
-                placeholder="Name"
-                value={folderName}
-                onChange={(e) => setFolderName(e.target.value)}
-                className="mb-2 p-2 bg-pink02  focus-visible:outline-none focus-visible:bg-pink03 hover:bg-pink03"
-              />
+      {/* Create Folder Dialog */}
+      <Transition appear show={isFolderPopupOpen} as={Fragment}>
+        <Dialog as='div' initialFocus={changeFocusRef} onClose={closeFolderPopup} className={'relative z-10'}>
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-darkBg/70' />
+          </Transition.Child>
 
-              <div className='flex flex-row justify-between items-center'>
-                <button
-                  onClick={handleCreateFolder}
-                  className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
-                >
-                  Create Folder
-                </button>
-                <button
-                  onClick={closeFolderPopup}
-                  className="py-2 w-1/5 font-semibold text-button bg-white border border-black01  rounded hover:bg-gray-100"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {isSharePopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-black01">
-            <div className="bg-white p-2.5rem rounded-xl space-y-2.5rem">
-              <h2 className="text-heading font-semibold">Keep The Key Secret</h2>
-              <h3 className="text-heading font-semibold">BvOA9Fxk4lsa7TeUiGWBDnoJbZ3UPXk69nxiitoyMyQ=</h3>
-              <button
-                onClick={closeSharePopup}
-                className="py-2 w-1/5 font-semibold text-button text-white bg-pink01 rounded hover:bg-pink01Hover"
+          <div className="fixed inset-0">
+            <div className="flex min-h-full items-center justify-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
               >
-                OK
-              </button>
+                <Dialog.Panel className="w-1/3 transform rounded-lg shadow-xl transition-all bg-lightBg dark:bg-darkDropDownBg dark:ring-1 dark:ring-darkContentsBorder">
+
+                  <div className='flex flex-col p-7 space-y-10' ref={changeFocusRef}>
+                    <Dialog.Title className={'text-title'}>Create Folder</Dialog.Title>
+                    <input type="text" placeholder="Enter folder name" value={folderName} onChange={(e) => setFolderName(e.target.value)}
+                      className='outline-none bg-transparent rounded-lg p-3 focus-within:border-pink01
+                        border border-lightItemBorder/20 placeholder:text-lightFont/35
+                        dark:border dark:border-darkItemBorder/20 placeholder:dark:text-darkFont/35 '/>
+                  </div>
+
+                  <div className='flex justify-between px-4 py-3 border-t-1 border-lightContentsBorder dark:border-darkContentsBorder [&>button]:px-7 [&>button]:py-2 [&>button]:rounded-lg'>
+                    <button onClick={closeFolderPopup} className='hover:bg-darkBg/5 dark:hover:bg-lightBg/5'>Cancel</button>
+                    <button onClick={handleCreateFolder} className={`${isExistFolderName ? 'text-white bg-pink01' : 'text-lightFont/[0.35] bg-darkBg/10 dark:text-darkFont/[0.35] dark:bg-lightBg/10'}`} disabled={!isExistFolderName}>Create Folder</button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
             </div>
           </div>
-        )}
-      </div> */}
-      </>
+        </Dialog>
+      </Transition>
 
-</div>
+      {/* Share Button Dialog */}
+      <Transition appear show={isSharePopupOpen} as={Fragment}>
+        <Dialog as='div' initialFocus={changeFocusRef} onClose={closeSharePopup} className={'relative z-10'}>
+          <Transition.Child
+            as={Fragment}
+            enter='ease-out duration-300'
+            enterFrom='opacity-0'
+            enterTo='opacity-100'
+            leave='ease-in duration-200'
+            leaveFrom='opacity-100'
+            leaveTo='opacity-0'
+          >
+            <div className='fixed inset-0 bg-darkBg/70' />
+          </Transition.Child>
+
+          <div className="fixed inset-0">
+            <div className="flex min-h-full items-center justify-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-1/3 transform rounded-lg shadow-xl transition-all bg-lightBg dark:bg-darkDropDownBg dark:ring-1 dark:ring-darkContentsBorder">
+
+                  <div className='flex flex-col p-7 space-y-10' ref={changeFocusRef}>
+                    <Dialog.Title className={'text-title'}>Keep The Key Secret</Dialog.Title>
+                    <div className='flex flex-row justify-between rounded-lg p-3
+                                    bg-pink01/10'>
+                      <p>{share_key}</p>
+                      <button title='copy to clipboard' type='button' onClick={copyToClipboard} className='hover:text-pink01'><Copy20Regular /></button>
+                    </div>
+                  </div>
+
+                  <div className='flex justify-center px-4 py-3 border-t-1 border-lightContentsBorder dark:border-darkContentsBorder [&>button]:px-7 [&>button]:py-2 [&>button]:rounded-lg'>
+                    <button onClick={closeSharePopup} className="text-white bg-pink01">OK</button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+    </div>
   )
 };
+
 export default MyBox;

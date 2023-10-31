@@ -4,6 +4,7 @@ import {
     Search24Regular,
     DismissCircle24Filled,
 } from "@fluentui/react-icons";
+import DarkModeButton from '@/components/darkMode/DarkMode';
 
 export const Searchbar = () => {
 
@@ -15,8 +16,8 @@ export const Searchbar = () => {
 
     return (
         <div className="h-serchbarHeight w-full border-b-1 flex flex-row flex-none divide-x-1 font-light
-                        bg-lightBg border-lightContentsBorder divide-lightContentsBorder
-                        dark:bg-darkBg dark:border-darkContentsBorder dark:divide-darkContentsBorder">
+                        border-lightContentsBorder divide-lightContentsBorder
+                        dark:border-darkContentsBorder dark:divide-darkContentsBorder">
             {/* searchbar space */}
             <div className="w-full px-8 py-1 ">
                 <form action="#" aria-label="Search" role="search" className="h-full group" >
@@ -36,7 +37,9 @@ export const Searchbar = () => {
                     </label>
                 </form>
             </div >
-            
+            <div className="aspect-square h-full flex justify-center box-content">
+                <DarkModeButton />
+            </div>
             {/* account space */}
             <div className="px-8 pl-20 flex flex-row items-center justify-end space-x-5">
                 <div className="w-3/4 bg-lightSkelton01 dark:bg-darkSkelton01">

@@ -20,7 +20,7 @@ export const uploadFolderAPI = async (request: uploadAPIReq) => {
     id: request.id,
     path: request.path,
     isDirectory: request.isDirectory,
-    data: request.data
+    data: request.data,
   };
   const body = JSON.stringify(req);
   console.log("Upload body: ", body);

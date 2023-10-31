@@ -29,7 +29,7 @@ export default function Home() {
       setConnecting(false);
       return;
     }
-    
+
     const provider = new ethers.BrowserProvider((window as any).ethereum);
     const signer = await provider.getSigner();
 
@@ -103,7 +103,7 @@ export default function Home() {
           <use xlinkHref="/logoMark.svg#logoMark" />
         </svg>
       </div>
-      
+
       <div className='w-1/2 h-full flex justify-center'>
         <div className='space-y-60.8 w-auto flex flex-col justify-center'>
           <div className='space-y-5'>
