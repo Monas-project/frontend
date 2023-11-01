@@ -50,7 +50,7 @@ const DarkModeButton = () => {
             className="w-full h-full flex justify-center items-center"
             onClick={handleThemeToggle}>
             {isPlaying ? (
-                <Lottie className=""
+                <Lottie
                     animationData={theme === "dark" ? ToDarkAnimation : ToLightAnimation}
                     loop={false}
                     onComplete={onAnimationComplete}

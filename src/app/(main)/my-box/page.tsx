@@ -34,6 +34,8 @@ import {
 } from '@fluentui/react-icons';
 import { Menu, Transition, Dialog } from '@headlessui/react';
 import DragDrop from '@/components/DragDrop';
+import Lottie from 'lottie-react';
+import uploadFileCat from "@/components/uploadFileCat.json";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -67,10 +69,10 @@ const MyBox = () => {
     getRoot();
   }, [])
 
-  useEffect(() => {
+  /* useEffect(() => {
     console.log("walletData", walletData)
     if (!walletData || !walletData.address) router.push(`/`);
-  }, [])
+  }, []) */
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
   const [nextPath, setNextPath] = useState<string>('');
@@ -132,6 +134,8 @@ const MyBox = () => {
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
 
+  const [progress, setProgress] = useState(0);
+
   const openFilePopup = () => {
     setIsFilePopupOpen(true);
   };
@@ -141,7 +145,9 @@ const MyBox = () => {
     setCid("");
     setFileName('');
     setPath('');
+    setProgress(0);
   };
+
   const openFolderPopup = () => {
     setIsFolderPopupOpen(true);
   };
@@ -155,6 +161,7 @@ const MyBox = () => {
   const openSharePopup = () => {
     setIsSharePopupOpen(true);
   };
+
   const closeSharePopup = () => {
     setIsSharePopupOpen(false);
   };
@@ -193,7 +200,7 @@ const MyBox = () => {
     closeFilePopup();
   };
 
-  const uploadFile = async (file: any) => {
+  /* const uploadFile = async (file: any) => {
     try {
       setUploading(true);
 
@@ -223,12 +230,55 @@ const MyBox = () => {
       setUploading(false);
       alert("Trouble uploading file");
     }
+  }; */
+
+  const uploadFile = async (file: any) => {
+    try {
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+
+      let config = {
+        onUploadProgress: (progressEvent: ProgressEvent) => {
+          if (progressEvent.lengthComputable) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setProgress(percentCompleted);
+          }
+        },
+        // header
+        headers: {
+          accept: 'application/json',
+          pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
+          pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
+          'Content-Type': `multipart/form-data; boundary=${formData}`,
+        },
+      };
+
+      const res = await axios.post(
+        // APIのURL
+        "https://api.pinata.cloud/pinning/pinFileToIPFS",
+        // req params
+        formData,
+        config
+      );
+
+      const cid = await res.data.IpfsHash;
+      console.log("cid", cid)
+      setCid(cid);
+      setUploading(false);
+    } catch (e) {
+      console.log(e);
+      setUploading(false);
+      alert("Trouble uploading file");
+    }
   };
 
-  const handleFileChange = (e: any) => {
-    console.log("e.target.files[0]", e.target.files[0])
+  const handleFileChange = (files: any) => {
+    const file = files[0];
+    console.log("files[0]", file)
     // setSelectedFile(e.target.files[0]);
-    uploadFile(e.target.files[0]);
+    uploadFile(file);
   };
 
   // // フォルダアップロード
@@ -286,7 +336,7 @@ const MyBox = () => {
     formData.append("isDirectory", "true");
     // formData.append("data", "");  // ここで実際のファイルオブジェクトを追加する場合、第二引数にファイルオブジェクトを指定します
     const formDataEntries = Array.from(formData.entries());
-      for (let [key, value] of formDataEntries) {
+    for (let [key, value] of formDataEntries) {
       console.log("formData");
       console.log(key, value);
     }
@@ -322,6 +372,7 @@ const MyBox = () => {
   const handleSahre = (location: string) => {
     openSharePopup();
   };
+
   const handleDownload = (location: string) => {
     // delete処理
   };
@@ -423,8 +474,7 @@ const MyBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
@@ -458,8 +508,7 @@ const MyBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
@@ -493,8 +542,7 @@ const MyBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
@@ -666,12 +714,24 @@ const MyBox = () => {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-1/3 transform rounded-lg shadow-xl transition-all bg-lightBg dark:bg-darkDropDownBg dark:ring-1 dark:ring-darkContentsBorder">
-                  <div className='flex flex-col p-7 space-y-10' ref={changeFocusRef}>
+                  <div className='flex flex-col p-7 space-y-5' ref={changeFocusRef}>
                     <Dialog.Title className={'text-title'}>Upload File</Dialog.Title>
+
                     {cid ? (
                       <Files cid={cid} />
+                    ) : progress > 0 ? (
+                      <div className='w-full border-2 border-dashed border-pink01 rounded-lg space-y-4 p-8 flex flex-col'>
+                        <Lottie animationData={uploadFileCat} className='w-5/12 place-self-center py-4' />
+                        <p className='text-xs'>Uploading...</p>
+                        <div className="h-2 rounded-full bg-darkBg/10 dark:bg-lightBg/10">
+                          <div className="h-full rounded-full bg-gradient-to-r 
+                                          from-lightPink to-pink01
+                                          dark:from-darkPink dark:to-pink01" style={{ width: `${progress}%` }}></div>
+                        </div>
+                      </div>
                     ) : (
-                      <DragDrop uploadFile={uploadFile} />
+                      <DragDrop handleFileChange={handleFileChange} />
+                      
                     )}
 
                     <input type="text" placeholder="Enter file name" value={fileName} onChange={(e) => setFileName(e.target.value)}
@@ -767,8 +827,7 @@ const MyBox = () => {
 
                   <div className='flex flex-col p-7 space-y-10' ref={changeFocusRef}>
                     <Dialog.Title className={'text-title'}>Keep The Key Secret</Dialog.Title>
-                    <div className='flex flex-row justify-between rounded-lg p-3
-                                    bg-pink01/10'>
+                    <div className='flex flex-row justify-between rounded-lg p-3 shadow-dropShadow'>
                       <p>{share_key}</p>
                       <button title='copy to clipboard' type='button' onClick={copyToClipboard} className='hover:text-pink01'><Copy20Regular /></button>
                     </div>

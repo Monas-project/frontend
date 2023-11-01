@@ -12,7 +12,7 @@ const GetBox = () => {
     <div>
       <div className='h-serchbarHeight' />
       <div className='px-9 py-4'>
-        <h1 className='text-folderTitle'>Get Box</h1>
+        <h1 className='text-text-title'>Get Box</h1>
 
         <div className='flex flex-col'>
           <label className="">URI :</label>
@@ -22,7 +22,7 @@ const GetBox = () => {
           <textarea className="border border-pink01"></textarea>
         </div>
 
-        <button onClick={getData} className="bg-pink01">Enter</button>
+        <button onClick={getData} className="bg-pink01 text-lightBg">Enter</button>
         {data && <div>{data}</div>}
       </div>
     </div>

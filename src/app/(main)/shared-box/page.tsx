@@ -61,7 +61,7 @@ const SharedBox = () => {
                       border-lightContentsBorder 
                       dark:border-darkContentsBorder'>
           <div className='flex flex-rows items-center justify-between'>
-            <h1 className='text-folderTitle'>Shared Box</h1>
+            <h1 className='text-title'>Shared Box</h1>
             <button title='gridOrList' type='button'><Grid16Filled /></button>
           </div>
             {/* フィルターボタン 3つ */}
@@ -88,8 +88,7 @@ const SharedBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
@@ -123,8 +122,7 @@ const SharedBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
@@ -158,8 +156,7 @@ const SharedBox = () => {
                           <div className='grid grid-cols-filterGrid gap-5'>
                             {filterTypeContents.map((item) => (
                               <button key={item.name} className='flex flex-col rounded-lg justify-center items-center self-center min-w-filterItemGrid aspect-square space-y-2
-                                                            bg-darkBg bg-opacity-0 dark:bg-lightBg dark:bg-opacity-0
-                                                            hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
+                                                                hover:bg-lightHoverBtn dark:hover:bg-darkHoverBtn'>
                                 <div>{item.icon}</div>
                                 <div className='whitespace-nowrap'>{item.name}</div>
                               </button>
