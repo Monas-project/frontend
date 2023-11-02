@@ -27,8 +27,11 @@ export default function DragDrop(props: { handleFileChange: (files: any) => void
 
         // ドロップされたファイルの処理
         const files = Array.from(event.dataTransfer.files);
-        if (files.length > 0) {
-            props.handleFileChange(files);
+        // if (files.length > 0) {
+        //     props.handleFileChange(files);
+        // }
+        if (event.dataTransfer.files.length > 0) {
+            props.handleFileChange(event.dataTransfer.files);
         }
     };
 
