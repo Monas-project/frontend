@@ -1,6 +1,6 @@
 "use client";
 import { Fragment } from 'react';
-import { Searchbar } from '@/components/search/searchbar';
+import { Topbar } from '@/components/topbar/topbar';
 import {
   Grid16Filled,
   CaretDown12Filled,
@@ -56,7 +56,7 @@ const SharedBox = () => {
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
       <div className='sticky top-0'>
-        <Searchbar />
+        <Topbar />
         <div className='border-b-1 px-9 py-4 space-y-3
                       border-lightContentsBorder 
                       dark:border-darkContentsBorder'>

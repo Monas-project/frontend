@@ -1,5 +1,5 @@
 "use client";
-import { Searchbar } from '@/components/search/searchbar';
+import { Topbar } from '@/components/topbar/topbar';
 import {
   Grid16Filled,
   CaretRight20Filled,
@@ -26,7 +26,7 @@ const FriendList = () => {
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
       <div className='sticky top-0'>
-        <Searchbar />
+        <Topbar />
         <div className='border-b-1 px-9 py-4 space-y-3
                       border-lightContentsBorder 
                       dark:border-darkContentsBorder'>

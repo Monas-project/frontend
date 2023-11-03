@@ -88,36 +88,41 @@ export default function Home() {
   };
 
   return (
-    <div className='h-screen w-screen bg-cover font-semibold
+    <div className='h-screen w-screen bg-cover font-semibold bg-center xl:bg-left
                     bg-homeBgLight
                     dark:bg-homeBgDark'>
-
+      {/* Logotype */}
       <div className='absolute top-7 left-7'>
         <svg xmlns="http://www.w3.org/2000/svg" className='h-logoType w-auto fill-pink01' viewBox="0 0 893.9 236.87">
           <use xlinkHref="/logoType.svg#logoType" />
         </svg>
       </div>
 
-      <div className='absolute bottom-7 right-7'>
-        <svg xmlns="http://www.w3.org/2000/svg" className='h-logoMark w-auto fill-white' viewBox="0 0 338.9 335.4">
+      {/* Logomark */}
+      <div className='absolute bottom-7 right-7 lg:inset-x-0 lg:bottm-1 lg:flex lg:place-content-center'>
+        <svg xmlns="http://www.w3.org/2000/svg" className='h-logoMark w-auto fill-white xl:fill-pink01 xl:h-16 lg:h-10' viewBox="0 0 338.9 335.4">
           <use xlinkHref="/logoMark.svg#logoMark" />
         </svg>
       </div>
 
-      <div className='w-1/2 h-full flex justify-center'>
-        <div className='space-y-60.8 w-auto flex flex-col justify-center'>
+      <div className='w-1/2 h-full flex justify-center
+                      lg:w-full xl:w-9/12'>
+        <div className='space-y-60.8 w-auto flex flex-col justify-center 
+                        lg:text-center lg:place-items-center lg:[&>div]:w-full lg:[&_button]:w-3/4'>
           <div className='space-y-5'>
             <h1 className='text-h1'>Welcome to Monas<span className='text-pink01 text-8xl'>&#46;</span></h1>
             <h2 className='font-normal text-h2'>Give you the power of data and <br />the future is yours to decide!</h2>
           </div>
 
-          <button onClick={connectWallet} disabled={connecting}
-            className='w-299.2 py-2.5 text-white text-base bg-pink01 rounded-full'
-          >
-            {isSignedIn ? 'Connected' : (connecting ? 'Connecting...' : 'Connect Wallet')}
-          </button>
+          <div className='w-full'>
+            <button onClick={connectWallet} disabled={connecting}
+              className='w-299.2 py-2.5 text-white text-base bg-pink01 rounded-full'
+            >
+              {isSignedIn ? 'Connected' : (connecting ? 'Connecting...' : 'Connect Wallet')}
+            </button>
+          </div>
 
-          <div className='w-299.2 space-x-2.5 flex items-center'>
+          <div className='w-299.2 space-x-2.5 flex items-center lg:px-8'>
             <div className='h-px w-full
                             bg-lightFont
                             dark:bg-darkFont'></div>

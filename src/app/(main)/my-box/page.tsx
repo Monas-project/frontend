@@ -10,7 +10,7 @@ import { useWalletContext } from "@/context/ownerAddress";
 import { uploadFolderAPI } from "@/utils/api/uploadFolder";
 import { uploadFileAPI } from "@/utils/api/uploadFile";
 import { fetchAPI } from "@/utils/api/fetch";
-import { Searchbar } from '@/components/search/searchbar';
+import { Topbar } from '@/components/topbar/topbar';
 import {
   Grid16Filled,
   CaretDown12Filled,
@@ -199,38 +199,6 @@ const MyBox = () => {
     console.log("ファイルupload", currentPath)
     closeFilePopup();
   };
-
-  /* const uploadFile = async (file: any) => {
-    try {
-      setUploading(true);
-
-      const formData = new FormData();
-      formData.append("file", file, file.name);
-      const res = await axios.post(
-        // APIのURL
-        "https://api.pinata.cloud/pinning/pinFileToIPFS",
-        // req params
-        formData,
-        // header
-        {
-          headers: {
-            accept: 'application/json',
-            pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
-            pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
-            'Content-Type': `multipart/form-data; boundary=${formData}`,
-          },
-        },
-      );
-      const cid = await res.data.IpfsHash;
-      console.log("cid", cid)
-      setCid(cid);
-      setUploading(false);
-    } catch (e) {
-      console.log(e);
-      setUploading(false);
-      alert("Trouble uploading file");
-    }
-  }; */
 
   const uploadFile = async (file: any) => {
     try {
@@ -432,8 +400,8 @@ const MyBox = () => {
   return (
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
-      <div className='sticky top-0'>
-        <Searchbar />
+      <div className='sticky top-0 overflow-hidden'>
+        <Topbar />
         <div className='border-b-1 px-9 py-4 space-y-3
                       border-lightContentsBorder 
                       dark:border-darkContentsBorder'>
