@@ -47,7 +47,7 @@ const MyBox = () => {
   const { root, setRoot } = useDataContext();
   const { walletData } = useWalletContext();
   const [rootId, setRootId] = useState('');
-  console.log("walletData", walletData.address)
+  // console.log("walletData", walletData.address)
   console.log("root", root)
   const childData = root?.child || {};
   console.log("childData", childData)
@@ -69,25 +69,12 @@ const MyBox = () => {
     getRoot();
   }, [])
 
-  /* useEffect(() => {
+  useEffect(() => {
     console.log("walletData", walletData)
     if (!walletData || !walletData.address) router.push(`/`);
-  }, []) */
+  }, [])
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
-  const [nextPath, setNextPath] = useState<string>('');
-
-  const addItem = (name: string) => {
-    setCurrentPath([...currentPath, name]);
-  };
-
-  const removeLastItem = () => {
-    if (currentPath.length > 0) {
-      const newArray = [...currentPath];
-      newArray.pop();
-      setCurrentPath(newArray);
-    }
-  };
 
   const nextData = async (path: string) => {
     console.log("直前nextData currentPath", currentPath)
@@ -100,39 +87,27 @@ const MyBox = () => {
   };
 
   const backData = async () => {
-    console.log("直前backData currentPath", currentPath)
     const pathForPop = [...currentPath]
-    console.log("Back:currentPath", currentPath)
     pathForPop.pop()
-    console.log("Back:currentPath", currentPath)
-    console.log("Back:pathForPop", pathForPop)
     const path = pathToString(pathForPop)
-    console.log("path", path)
     const data: any = await fetchAPI(path);
-    console.log("BACKfetch後data", data)
     setRoot(data);
     setCurrentPath(pathForPop)
-    console.log("後backData currentPath", currentPath)
   }
 
   const pathToString = (array: string[]) => {
     return '/' + array.join('/');
   };
 
-  const [date, setDate] = useState(root);
-  const [dataList, setDataList] = useState(root?.child || []);
-  const [owner, setOwner] = useState("0x253...354");
-
   const [isFilePopupOpen, setIsFilePopupOpen] = useState(false);
   const [isFolderPopupOpen, setIsFolderPopupOpen] = useState(false);
   const [isSharePopupOpen, setIsSharePopupOpen] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [folderName, setFolderName] = useState('');
   const [path, setPath] = useState('');
-  // const [file, setFile] = useState("");
   const [cid, setCid] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [fileData, setFileData] = useState<File | null>(null);
 
   const [progress, setProgress] = useState(0);
 
@@ -167,70 +142,74 @@ const MyBox = () => {
   };
 
   const uploadData = async () => {
-    if (!cid || !fileName) {
+    if (!fileData || !fileName) {
       alert('必要な情報を入力してください');
       return;
     }
 
-    // addItem(fileName);
-    // pathToString(currentPath);
-
+    // パスの組み立て
     const pathForPush = [...currentPath]
     pathForPush.push(fileName)
     const path = pathToString(pathForPush)
 
-    const formattedData = {
-      name: fileName,
-      path: path,
-      isDirectory: false,
-      data_cid: cid,
-    };
-    console.log("formattedData", formattedData)
+    const apiUrl = 'http://localhost:8000/upload';
 
-    // データを使って必要な処理を実行する（例：API呼び出し、データの保存など）
+    const formData = new FormData();
+    formData.append("name", fileName);
+    formData.append("id", walletData?.address || ""); // walletDataがnullの場合のためのフォールバック
+    formData.append("path", path);
+    formData.append("isDirectory", "false");
+    if (fileData) {
+      formData.append("data", fileData);
+    }
+    const formDataEntries = Array.from(formData.entries());
+      for (let [key, value] of formDataEntries) {
+      console.log("formData");
+      console.log(key, value);
+    }
+
     try {
-      const data: any = await uploadFileAPI(formattedData);
-      console.log("metadata", data);
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        body: formData,
+      });
+
+      console.log("response", response)
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
       setRoot(data);
       // router.push(`/my-box?cid=${rootId}`);
     } catch (error) {
-      console.error('UploadFile error:', error);
+      console.error('フォルダのアップロード中にエラーが発生しました:', error);
     }
-    console.log("ファイルupload", currentPath)
     closeFilePopup();
   };
 
-  const uploadFile = async (file: any) => {
+  /* const uploadFile = async (file: any) => {
     try {
       setUploading(true);
 
       const formData = new FormData();
       formData.append("file", file, file.name);
-
-      let config = {
-        onUploadProgress: (progressEvent: ProgressEvent) => {
-          if (progressEvent.lengthComputable) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setProgress(percentCompleted);
-          }
-        },
-        // header
-        headers: {
-          accept: 'application/json',
-          pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
-          pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
-          'Content-Type': `multipart/form-data; boundary=${formData}`,
-        },
-      };
-
       const res = await axios.post(
         // APIのURL
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
         // req params
         formData,
-        config
+        // header
+        {
+          headers: {
+            accept: 'application/json',
+            pinata_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_KEY}`,
+            pinata_secret_api_key: `${process.env.NEXT_PUBLIC_PINATA_API_SECRET}`,
+            'Content-Type': `multipart/form-data; boundary=${formData}`,
+          },
+        },
       );
-
       const cid = await res.data.IpfsHash;
       console.log("cid", cid)
       setCid(cid);
@@ -240,13 +219,12 @@ const MyBox = () => {
       setUploading(false);
       alert("Trouble uploading file");
     }
-  };
+  }; */
 
-  const handleFileChange = (files: any) => {
-    const file = files[0];
-    console.log("files[0]", file)
+  const handleFileChange = (e: any) => {
+    console.log("e.target.files[0]", e.target.files[0])
     // setSelectedFile(e.target.files[0]);
-    uploadFile(file);
+    setFileData(e.target.files[0]);
   };
 
   // // フォルダアップロード
@@ -290,7 +268,6 @@ const MyBox = () => {
     }
 
     // パスの組み立て
-    // const path = `${currentPath.join('/')}/${folderName}`;
     const pathForPush = [...currentPath]
     pathForPush.push(folderName)
     const path = pathToString(pathForPush)
@@ -303,21 +280,15 @@ const MyBox = () => {
     formData.append("path", path);
     formData.append("isDirectory", "true");
     // formData.append("data", "");  // ここで実際のファイルオブジェクトを追加する場合、第二引数にファイルオブジェクトを指定します
-    const formDataEntries = Array.from(formData.entries());
-    for (let [key, value] of formDataEntries) {
-      console.log("formData");
-      console.log(key, value);
-    }
-    // const body = JSON.stringify(formData);
-    // console.log("body", body)
-    // console.log("apiUrl", apiUrl)
+    // const formDataEntries = Array.from(formData.entries());
+    //   for (let [key, value] of formDataEntries) {
+    //   console.log("formData");
+    //   console.log(key, value);
+    // }
 
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        // headers: {
-        //   "Content-Type": "application/json",
-        // },
         body: formData,
       });
 
@@ -400,7 +371,7 @@ const MyBox = () => {
   return (
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
-      <div className='sticky top-0 overflow-hidden'>
+      <div className='sticky top-0'>
         <Topbar />
         <div className='border-b-1 px-9 py-4 space-y-3
                       border-lightContentsBorder 
@@ -698,7 +669,11 @@ const MyBox = () => {
                         </div>
                       </div>
                     ) : (
-                      <DragDrop handleFileChange={handleFileChange} />
+                      // <DragDrop handleFileChange={(e) => setFileData(e.target.files?.[0] || null)} />
+                      <DragDrop handleFileChange={(files) => {
+                        const file = Array.isArray(files) ? files[0] : files?.[0];
+                        setFileData(file || null);
+                    }} />
                       
                     )}
 
