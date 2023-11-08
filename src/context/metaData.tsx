@@ -21,7 +21,7 @@ export interface Metadata {
 }
 
 // 使用例
-/* const initialData: Metadata = {
+const initialData: Metadata = {
   name: "root",
   creation_date: "",
   child: {

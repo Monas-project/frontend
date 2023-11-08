@@ -1,66 +1,37 @@
 "use client";
-import { Searchbar } from '@/components/search/searchbar';
+import { Topbar } from '@/components/topbar/topbar';
 import {
   Grid16Filled,
-  CaretDown12Filled,
-
-  DocumentText24Filled,
-  Image24Filled,
-  DocumentPdf24Filled,
-  Video24Filled,
-  Folder24Filled,
-  FolderZip24Filled,
-
-  ArrowDownload16Regular,
-  Share16Regular,
-  Delete16Regular,
-  Key16Regular,
+  CaretRight20Filled,
 } from '@fluentui/react-icons';
-
 
 const FriendList = () => {
 
-  const filterTypeContents = [
-    { name: 'documents', icon: <DocumentText24Filled /> },
-    { name: 'Photos & images', icon: < Image24Filled /> },
-    { name: 'PDFs', icon: <DocumentPdf24Filled /> },
-    { name: 'Videos', icon: <Video24Filled /> },
-    { name: 'Folders', icon: <Folder24Filled /> },
-    { name: 'Archives', icon: <FolderZip24Filled /> },
-  ];
-
   const fileTableTr = [
-    { key: 'folder', th: '', width: '0%' },
+    { key: 'userIcon', th: '', width: '0%' },
     { key: 'name', th: 'Name', width: '63.7%' },
-    { key: 'Shared by', th: 'Shared by', width: '12%' },
-    { key: 'Shared data', th: 'Shared data', width: '13.7%' },
-    { key: 'action', th: '', width: '10.6%' },
-  ];
-  const fileTableAction = [
-    { icon: <ArrowDownload16Regular />, alt: 'Download', onclick: '' },
-    { icon: <Share16Regular />, alt: 'Share', onclick: '' },
-    { icon: <Delete16Regular />, alt: 'Delete', onclick: '' },
-    { icon: <Key16Regular />, alt: 're-encryt', onclick: '' },
+    { key: 'address', th: 'Address', width: '25.7%' },
+    { key: 'viewSharedFile', th: '', width: '10.6%' },
   ];
 
   const dataList = [
-    { name: "太郎", address: "0x23...178", sharingFile: "A" },
-    { name: "花子", address: "0x56...998", sharingFile: "D" },
-    { name: "次郎", address: "0x72...211", sharingFile: "B" },
-    { name: "三郎", address: "0x19...591", sharingFile: "C" },
-    { name: "四郎", address: "0x98...612", sharingFile: "A" },
+    { icon: "", name: "太郎", address: "0x23...178", },
+    { icon: "", name: "花子", address: "0x56...998", },
+    { icon: "", name: "次郎", address: "0x72...211", },
+    { icon: "", name: "三郎", address: "0x19...591", },
+    { icon: "", name: "四郎", address: "0x98...612", },
   ];
-  return (
 
+  return (
     <div className='h-full flex flex-col'>
       {/* コンテンツ上部 */}
       <div className='sticky top-0'>
-        <Searchbar />
+        <Topbar />
         <div className='border-b-1 px-9 py-4 space-y-3
                       border-lightContentsBorder 
                       dark:border-darkContentsBorder'>
           <div className='flex flex-rows items-center justify-between'>
-            <h1 className='text-folderTitle'>Friend List</h1>
+            <h1 className='text-title'>Friend List</h1>
             <button title='gridOrList' type='button'><Grid16Filled /></button>
           </div>
         </div>
@@ -91,29 +62,22 @@ const FriendList = () => {
                     dark:border-y-darkTableBorder dark:hover:bg-darkHoverTrBg
                     [&_td]:pr-3 [&_td]:py-[0.797rem] [&_td]:truncate'>
 
-                    {/* File,Folder */}
-                    <td className='absolute' style={{ overflow: 'visible', paddingTop: "0.48rem", paddingLeft: '1.75rem'/* 28px - 表題と同じ*/ }}>
-                        <button aria-label={'folder' + index} type='button' /* onClick={() => nextData(path)} */ className='text-folder pt-[0.18rem]'>
-                          <Folder24Filled />
-                        </button>
+                    {/* Icon */}
+                    <td className='absolute' style={{ overflow: 'visible', paddingTop: "0.43rem", paddingLeft: '1.75rem'/* 28px - 表題と同じ*/ }}>
+                      <div className='h-9 aspect-square rounded-full bg-lightSkelton01 dark:bg-darkSkelton01'>{item.icon}</div>
                     </td>
 
                     {/* Name */}
                     <td className='pl-20'>{item.name}</td>
 
-                    {/* Shared By */}
-                    <td>{item.owner}</td>
-
-                    {/* Share date */}
-                    <td>{item.dataModified}</td>
+                    {/* address */}
+                    <td>{item.address}</td>
 
                     {/* action */}
-                    <td className='pr-7 text-center space-x-3.5' style={{ paddingTop: "0.5rem", paddingRight: '1.75rem'/* 28px - 表題と同じ*/ }}>
-                      {fileTableAction.map((contents) => (
-                        <button key={contents.alt} className='invisible group-hover:visible' /*onClick */>
-                          <div>{contents.icon}</div>
-                        </button>
-                      ))}
+                    <td className='text-right' style={{ paddingTop: "0.5rem", paddingRight: '1.75rem'/* 28px - 表題と同じ*/ }}>
+                      <button type='button' title='view the shared files' className='invisible group-hover:visible' /*onClick */>
+                        <CaretRight20Filled />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -141,33 +105,6 @@ const FriendList = () => {
         </div>
       </div>
     </div>
-    
-
-
-    /* <div>
-      <h1 className="text-4xl font-bold text-center">Friend List</h1>
-      <h1>Friend List</h1>
-      <table className="table-auto">
-        <thead>
-          <tr>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Address</th>
-            <th className="px-4 py-2">Shareing file</th>
-            <th className="px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {dataList.map((item, index) => (
-            <tr key={index}>
-              <td className="border px-4 py-2">{item.name}</td>
-              <td className="border px-4 py-2">{item.address}</td>
-              <td className="border px-4 py-2">{item.sharingFile}</td>
-              <td className="border px-4 py-2"></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div> */
   )
 }
 export default FriendList;

@@ -38,11 +38,9 @@ const config: Config = {
 
       colors: {
         pink01: "#FF4185",
-        pink01Hover: "#E93374",
-        pink02: "#FFFAFC",
-        pink03: "#FFECF2",
-        gray01: "#CCCCCC",
-        gray02: "#757575",
+
+        lightPink: "#FFEEF4",
+        darkPink: "#4D001B",
 
         lightFont: "#111111",
         darkFont: "#F1F1F1",
@@ -108,7 +106,7 @@ const config: Config = {
 
         sideberWidth: "15rem",
 
-        serchbarHeight: "3.5rem",
+        serchbarHeight: "3rem",
         searchInputPt: "0.2rem",
         accountNameHeight: "0.9375rem",
       },
@@ -133,6 +131,10 @@ const config: Config = {
       gridTemplateColumns: {
         filterGrid: "max-content 1fr 1fr",
       },
+
+      boxShadow: {
+        dropShadow: "0 0 15px -5px rgb(53 0 19 / 0.25)",
+      },
     },
 
     screens: {
@@ -154,23 +156,5 @@ const config: Config = {
   },
 
   darkMode: "class",
-
-  /*  plugins: [
-    function ({ addUtilities }) {
-      const newUtilities = {
-        ".transform-gpu": {
-          transform: "translateY(-1.5rem) scale(0.75)",
-        },
-        "input:not(:placeholder-shown) + span, input:focus + span": {
-          transform: "translateY(-1.5rem) scale(0.75)",
-          top: "40%",
-          left: "0",
-          fontSize: "1em",
-          color: "#FF4185",
-        },
-      };
-      addUtilities(newUtilities, ["responsive", "hover"]);
-    },
-  ], */
 };
 export default config;

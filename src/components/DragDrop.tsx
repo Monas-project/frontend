@@ -6,16 +6,10 @@ import {
     Video24Regular,
 } from '@fluentui/react-icons';
 
-export default function DragDrop(props: { uploadFile: (file: any) => void }) {
+export default function DragDrop(props: { handleFileChange: (files: any) => void }) {
 
     const [isDragOver, setIsDragOver] = useState(false); // ドラッグアンドドロップのState
     const fileInputRef = useRef<HTMLInputElement | null>(null); // spanタグで input type='file' を表示
-
-    const handleFileChange = (files: any) => {
-        const file = files[0];
-        console.log("files[0]", file);
-        props.uploadFile(file);
-    };
 
     const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -33,8 +27,11 @@ export default function DragDrop(props: { uploadFile: (file: any) => void }) {
 
         // ドロップされたファイルの処理
         const files = Array.from(event.dataTransfer.files);
-        if (files.length > 0) {
-            handleFileChange(files);
+        // if (files.length > 0) {
+        //     props.handleFileChange(files);
+        // }
+        if (event.dataTransfer.files.length > 0) {
+            props.handleFileChange(event.dataTransfer.files);
         }
     };
 
@@ -57,7 +54,7 @@ export default function DragDrop(props: { uploadFile: (file: any) => void }) {
                                 [&_svg]:h-16 [&_svg]:w-16 [&>svg]:relative [&>svg]:z-0'>
                     <Image24Regular className='-rotate-[20deg]
                                             group-[.is-DragOver]:-translate-x-3 group-[.is-DragOver]:-rotate-[25deg]' />
-                    <div className='z-10 w-16 relative  [&>svg]:absolute [&>svg]:block [&>svg]:bottom-0'>
+                    <div className='z-10 w-16 relative [&>svg]:absolute [&>svg]:block [&>svg]:bottom-0'>
                         <DocumentBulletListMultiple24Regular className='[&>path]:stroke-white dark:[&>path]:stroke-darkDropDownBg [&>path]:stroke-[1.5px]' />
                         <DocumentBulletListMultiple24Regular className='[&>path]:fill-lightFont dark:[&>path]:fill-white' />
                     </div>
@@ -73,7 +70,7 @@ export default function DragDrop(props: { uploadFile: (file: any) => void }) {
                 title="Select the file to upload"
                 type="file"
                 accept=".jpg, .jpeg, .png, .gif"
-                onChange={(e) => handleFileChange(e.target.files)} // ファイル情報を渡す
+                onChange={(e) => props.handleFileChange(e.target.files)} // ファイル情報を渡す
             />
         </div>
     );
