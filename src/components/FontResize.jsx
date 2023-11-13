@@ -2,11 +2,12 @@
 import React, { useState, useEffect, useRef } from "react";
 
 function ResizeText({ children }) {
-    const parentRef = useRef(null); // 親要素へのref
+    const parentRef = useRef(null); // Ja: 親要素へのref En: ref to parent element
 
-    const [fontSize, setFontSize] = useState(17); // 初期フォントサイズ
+    const [fontSize, setFontSize] = useState(17); // Ja: 初期フォントサイズ En: Initial font size
 
-    // ウィンドウサイズが変更されたら、フォントサイズを調整
+    // Ja: ウィンドウサイズが変更されたら、フォントサイズを調整
+    // En: Adjust font size when Windows size changes
     useEffect(() => {
         const handleResize = () => {
             const parentWidth = parentRef.current.offsetWidth; // refを使用して親の幅を取得
@@ -15,13 +16,16 @@ function ResizeText({ children }) {
             setFontSize(newFontSize);
         };
 
-        // ウィンドウサイズの変更を監視
+        // Ja: ウィンドウサイズの変更を監視
+        // En: Monitor Windows size changes
         window.addEventListener('resize', handleResize);
 
-        // 初回の計算
+        // Ja:初回の計算
+        // En:Initial calculation
         handleResize();
 
-        // クリーンアップ
+        // Ja:クリーンアップ
+        // En: Clean up
         return () => {
             window.removeEventListener('resize', handleResize);
         };

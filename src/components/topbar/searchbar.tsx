@@ -8,7 +8,8 @@ import {
 
 export const Searchbar = () => {
 
-    // 入力テキストをstateで管理.クリア.
+    // Ja:入力テキストをstateで管理.クリア.
+    // En: Manage input text in state
     const [searchText, setSearchText] = useState("");
     const clearText = () => {
         setSearchText("");

@@ -1,18 +1,21 @@
 import React from 'react';
 
-// メタデータの型定義
+// Ja:メタデータの型定義
+// En: Metadata type definition
 interface FileMetadata {
   cid: string;
   name: string;
   is_directory: boolean;
 }
 
-// ディレクトリメタデータの型定義
+// Ja:ディレクトリメタデータの型定義
+// En: Directory metadata type definition
 interface DirectoryMetadata {
   [path: string]: FileMetadata | DirectoryMetadata;
 }
 
 // データの型定義
+// Data type definition
 interface Metadata {
   name: string;
   creation_date: string;

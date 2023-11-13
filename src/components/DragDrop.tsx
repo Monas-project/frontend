@@ -8,8 +8,8 @@ import {
 
 export default function DragDrop(props: { handleFileChange: (files: any) => void }) {
 
-    const [isDragOver, setIsDragOver] = useState(false); // ドラッグアンドドロップのState
-    const fileInputRef = useRef<HTMLInputElement | null>(null); // spanタグで input type='file' を表示
+    const [isDragOver, setIsDragOver] = useState(false); // Ja: ドラッグアンドドロップのState En: Drag-and drop state
+    const fileInputRef = useRef<HTMLInputElement | null>(null); // Ja: spanタグで input type='file' を表示 En: Span tag to show input type='file'
 
     const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -25,7 +25,7 @@ export default function DragDrop(props: { handleFileChange: (files: any) => void
         event.preventDefault();
         setIsDragOver(false);
 
-        // ドロップされたファイルの処理
+        // Ja: ドロップされたファイルの処理 En: Handing of dropped files
         const files = Array.from(event.dataTransfer.files);
         // if (files.length > 0) {
         //     props.handleFileChange(files);
@@ -35,7 +35,7 @@ export default function DragDrop(props: { handleFileChange: (files: any) => void
         }
     };
 
-    const handleFileInputClick = () => {  // spanをクリックした時
+    const handleFileInputClick = () => {  // Ja: spanをクリックした時 En: When clicked span
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
@@ -45,9 +45,9 @@ export default function DragDrop(props: { handleFileChange: (files: any) => void
     return (
         <div className='w-full'>
             <div
-                onDragOver={handleDragOver}     // HTMLでドロップ要素を受け取れるようにする
+                onDragOver={handleDragOver}     // Ja: HTMLでドロップ要素を受け取れるようにする En: HTML to accept drop elements
                 onDragLeave={handleDragLeave}
-                onDrop={handleDrop}             // ドロップされた要素に対してのアクション
+                onDrop={handleDrop}             // Ja: ドロップされた要素に対してのアクション En: Action on dropped elements
                 className={`border-2 border-dashed rounded-lg text-center space-y-4 py-8 [&_div]:pointer-events-none ${isDragOver ? 'border-pink01 group is-DragOver [&_path]:fill-pink01 dark:[&_path]:fill-pink01' : 'border-lightItemBorder/20 dark:border-darkItemBorder/20 [&_div]:pointer-events-auto'}`}
             >
                 <div className='flex flex-row justify-center -space-x-[20px] h-[65px] 
@@ -70,7 +70,7 @@ export default function DragDrop(props: { handleFileChange: (files: any) => void
                 title="Select the file to upload"
                 type="file"
                 accept=".jpg, .jpeg, .png, .gif"
-                onChange={(e) => props.handleFileChange(e.target.files)} // ファイル情報を渡す
+                onChange={(e) => props.handleFileChange(e.target.files)} // Ja: ファイル情報を渡す En: Passing files
             />
         </div>
     );

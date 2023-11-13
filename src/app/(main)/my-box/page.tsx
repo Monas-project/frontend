@@ -147,7 +147,8 @@ const MyBox = () => {
       return;
     }
 
-    // パスの組み立て
+    //Ja:パスの組み立て
+    //En:Assembling pasts
     const pathForPush = [...currentPath]
     pathForPush.push(fileName)
     const path = pathToString(pathForPush)
@@ -156,7 +157,7 @@ const MyBox = () => {
 
     const formData = new FormData();
     formData.append("name", fileName);
-    formData.append("id", walletData?.address || ""); // walletDataがnullの場合のためのフォールバック
+    formData.append("id", walletData?.address || ""); // Ja:walletDataがnullの場合のためのフォールバック  En: fallback for cases where walletData is null
     formData.append("path", path);
     formData.append("isDirectory", "false");
     if (fileData) {
@@ -333,7 +334,8 @@ const MyBox = () => {
     { content: "", title: "eeeeeeeeeeeeeeeeeeeeeee", date: "11 months ago" },
   ];
 
-  // フォルダーtableの表題
+  // Ja:フォルダーtableの表題
+  // En: Title of folder table
   const fileTableTr = [
     { key: 'folder', th: '', width: '0%' },
     { key: 'name', th: 'Name', width: '63.7%' },
@@ -343,6 +345,7 @@ const MyBox = () => {
   ];
 
   // アクションボタン
+  //Action button
   const fileTableAction = [
     { icon: <ArrowDownload16Regular />, alt: 'Download', onclick: handleDownload },
     { icon: <Share16Regular />, alt: 'Share', onclick: handleSahre },
@@ -357,6 +360,7 @@ const MyBox = () => {
   let changeFocusRef = useRef(null);
 
   // クリップボードにコピー
+  // Clipboard Copy
   const share_key = "BvOA9Fxk4lsa7TeUiGWBDnoJbZ3UPXk69nxiitoyMyQ=";
   const copyToClipboard = async () => {
     try {

@@ -25,12 +25,12 @@ const DarkModeButton = () => {
     const handleThemeToggle = () => {
 
         if (theme === "dark") {
-            document.documentElement.style.background = "#fff"; // ライトモードのbg
+            document.documentElement.style.background = "#fff"; // Ja: ライトモードのbg En: Light mode of bg
             setIsPlaying(true);
             setTheme("light");
 
         } else {
-            document.documentElement.style.background = "#0f0f0f"; // ダークモードのbg
+            document.documentElement.style.background = "#0f0f0f"; // Ja: ダークモードのbg En: Dark mode of bg
             setIsPlaying(true);
             setTheme("dark");
         }
