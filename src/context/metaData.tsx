@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
 // メタデータの型定義
 export interface FileMetadata {
@@ -46,6 +46,25 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export function DataProvider({ children }: { children: ReactNode }) {
   const [metaData, setMetaData] = useState<Metadata | null>(initialData); // 初期データを設定
   const [root, setRoot] = useState<Metadata | null>(initialData); // 初期データを設定
+
+  // ローカルストレージからデータを読み込む
+  useEffect(() => {
+    const savedMetaData = localStorage.getItem('metaData');
+    const savedRoot = localStorage.getItem('root');
+
+    if (savedMetaData) {
+      setMetaData(JSON.parse(savedMetaData));
+    }
+    if (savedRoot) {
+      setRoot(JSON.parse(savedRoot));
+    }
+  }, []);
+
+  // データが更新されたときにローカルストレージに保存する
+  useEffect(() => {
+    localStorage.setItem('metaData', JSON.stringify(metaData));
+    localStorage.setItem('root', JSON.stringify(root));
+  }, [metaData, root]);
 
   const contextValue: DataContextType = {
     metaData,

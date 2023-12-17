@@ -60,8 +60,9 @@ const MyBox = () => {
       }
       try {
         setRootId(cid);
-        console.log("data", root);
+        console.log("root data", root);
         setRoot(root);
+        // localStorage.setItem('root', Jsonroot);
       } catch (error) {
         console.error('Login error:', error);
       }
@@ -70,8 +71,12 @@ const MyBox = () => {
   }, [])
 
   useEffect(() => {
-    console.log("walletData", walletData)
-    if (!walletData || !walletData.address) router.push(`/`);
+    const walletAddress = localStorage.getItem('walletAddree');
+    console.log("walletAddress", walletAddress); // wallet string
+    if (!walletAddress) {
+          console.log("ifの中wallet.address", walletAddress);
+          router.push(`/`);
+      }
   }, [])
 
   const [currentPath, setCurrentPath] = useState<string[]>([]);
@@ -308,6 +313,33 @@ const MyBox = () => {
 
     closeFolderPopup();
   }
+
+  const getDecryptKey = async (item_path: string) => {
+    console.log("-----------------getDecryptKey--------------------------")
+    console.log("item_path", item_path)
+
+    const apiUrl = 'http://localhost:8000/fetchkey';
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: item_path }),
+      });
+
+      console.log("response", response)
+
+      if (!response.ok) {
+        const errorBody = await response.json(); // エラーレスポンスのボディを取得
+        console.error('サーバーからのエラーレスポンス:', errorBody);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('keyの取得中にエラーが発生しました:', error);
+    }
+  };
 
   const handleSahre = (location: string) => {
     openSharePopup();
@@ -567,7 +599,7 @@ const MyBox = () => {
                     <td className='absolute' style={{ overflow: 'visible', paddingTop: "0.48rem", paddingLeft: '1.75rem'/* 28px - 表題と同じ*/ }}>
                       {!item.is_directory ? (
                         <button title='file' type='button' className='text-document pt-[0.18rem]'>
-                          <a href={"https://gateway.pinata.cloud/ipfs/" + item.cid} target="_blank">
+                          <a href={"https://gateway.pinata.cloud/ipfs/" + item.metadata_cid} target="_blank">
                             <DocumentText24Filled />
                           </a>
                         </button>
@@ -590,10 +622,14 @@ const MyBox = () => {
                     </td>
 
                     {/* Owner */}
-                    <td>{item.metadata_cid}</td>
+                    <td>{walletData.address}</td>
 
                     {/* DataModified */}
                     <td>{item.creation_date}</td>
+
+                    <td>
+                      <button onClick={() => getDecryptKey(path)}>鍵</button>
+                    </td>
 
                     {/* action */}
                     <td className='pr-7 text-center space-x-3.5' style={{ paddingTop: "0.5rem", paddingRight: '1.75rem'/* 28px - 表題と同じ*/ }}>

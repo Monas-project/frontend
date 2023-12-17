@@ -79,6 +79,7 @@ export default function Home() {
       const data: any = await login(address);
       console.log("data", data);
       console.log("metadata", data.metadata);
+      localStorage.setItem('walletAddree', address)
       setRoot(data.metadata);
       setIsLoggedIn(true);
       router.push(`/my-box`);

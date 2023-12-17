@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, ReactNode, useState } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 
 // Walletの型定義
 export interface WalletData {
@@ -20,6 +20,20 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 // データプロバイダーコンポーネントを作成
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [walletData, setWalletData] = useState<WalletData | null>(initialWalletData); // 初期データを設定
+
+  // // ローカルストレージからデータを読み込む
+  // useEffect(() => {
+  //   const savedWalletData = localStorage.getItem('walletData');
+
+  //   if (savedWalletData) {
+  //     setWalletData(JSON.parse(savedWalletData));
+  //   }
+  // }, []);
+
+  // // データが更新されたときにローカルストレージに保存する
+  // useEffect(() => {
+  //   localStorage.setItem('walletData', JSON.stringify(walletData));
+  // }, []);
 
   const contextValue: WalletContextType = {
     walletData,
