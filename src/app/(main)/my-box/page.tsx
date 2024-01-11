@@ -45,12 +45,16 @@ const MyBox = () => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const { root, setRoot } = useDataContext();
+  const { currentNode, setCurrentNode } = useDataContext();
   const { walletData } = useWalletContext();
   const [rootId, setRootId] = useState('');
   // console.log("walletData", walletData.address)
   console.log("root", root)
-  const childData = root?.child || {};
-  console.log("childData", childData)
+  console.log("currentNode", currentNode)
+  const rootChildData = root?.child || {};
+  const childData = currentNode?.child || {};
+  console.log("rootChildData", rootChildData)
+  console.log("currentChildData", childData)
 
   useEffect(() => {
     const getRoot = async () => {
@@ -62,6 +66,7 @@ const MyBox = () => {
         setRootId(cid);
         console.log("root data", root);
         setRoot(root);
+        setCurrentNode(root);
         // localStorage.setItem('root', Jsonroot);
       } catch (error) {
         console.error('Login error:', error);
@@ -71,7 +76,7 @@ const MyBox = () => {
   }, [])
 
   useEffect(() => {
-    const walletAddress = localStorage.getItem('walletAddree');
+    const walletAddress = localStorage.getItem('walletAddress');
     console.log("walletAddress", walletAddress); // wallet string
     if (!walletAddress) {
           console.log("ifの中wallet.address", walletAddress);
@@ -86,17 +91,23 @@ const MyBox = () => {
     console.log("NEXT path", path)
     const data: any = await fetchAPI(path);
     console.log("NEXT fetch後data", data)
-    setRoot(data);
+    // setRoot(data);
+    setCurrentNode(data);
     setCurrentPath([...currentPath, data.name]);
     console.log("後nextData currentPath", currentPath)
   };
 
   const backData = async () => {
     const pathForPop = [...currentPath]
+    console.log("バックのcurrentPath", currentPath)
+    console.log("バックのpathForPop",pathForPop )
     pathForPop.pop()
     const path = pathToString(pathForPop)
+    console.log("バックのpath", path)
     const data: any = await fetchAPI(path);
-    setRoot(data);
+    console.log("バックのdata", data)
+    // setRoot(data);
+    setCurrentNode(data);
     setCurrentPath(pathForPop)
   }
 
@@ -187,7 +198,8 @@ const MyBox = () => {
       }
 
       const data = await response.json();
-      setRoot(data);
+      // setRoot(data);
+      setCurrentNode(data);
       // router.push(`/my-box?cid=${rootId}`);
     } catch (error) {
       console.error('フォルダのアップロード中にエラーが発生しました:', error);
@@ -272,11 +284,15 @@ const MyBox = () => {
       alert('必要な情報を入力してください');
       return;
     }
+    console.log("create folder folderName", folderName)
 
     // パスの組み立て
     const pathForPush = [...currentPath]
+    console.log("pathForPush", pathForPush)
     pathForPush.push(folderName)
+    console.log("pathForPush", pathForPush)
     const path = pathToString(pathForPush)
+    console.log("path", path)
 
     const apiUrl = 'http://localhost:8000/upload';
 
@@ -305,7 +321,8 @@ const MyBox = () => {
       }
 
       const data = await response.json();
-      setRoot(data);
+      // setRoot(data);
+      setCurrentNode(data);
       // router.push(`/my-box?cid=${rootId}`);
     } catch (error) {
       console.error('フォルダのアップロード中にエラーが発生しました:', error);
@@ -578,7 +595,7 @@ const MyBox = () => {
 
         {/* ファイル用テーブル */}
         <div className='grow text-left font'>
-          {root?.child && Object.keys(root.child).length > 0 ? (
+          {currentNode?.child && Object.keys(currentNode.child).length > 0 ? (
             <table className='table-fixed w-full'>
               <thead>
                 <tr>{fileTableTr.map((x) => (
@@ -588,7 +605,7 @@ const MyBox = () => {
                 ))}</tr>
               </thead>
               <tbody>
-                {Object.entries(root?.child).map(([path, item], index) => (
+                {Object.entries(currentNode?.child).map(([path, item], index) => (
                   <tr key={index}
                     className='group border-y hover:outline hover:outline-1 hover:outline-pink01 relative
                     border-y-lightTableBorder hover:bg-lightHoverTrBg

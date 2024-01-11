@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     Search24Regular,
     DismissCircle24Filled,
     ArrowLeft24Regular,
 } from "@fluentui/react-icons";
 
-export const Searchbar = () => {
+export const Searchbar = React.forwardRef((props, ref) => {
 
     // Ja:入力テキストをstateで管理.クリア.
     // En: Manage input text in state
@@ -53,4 +53,6 @@ export const Searchbar = () => {
             </label>
         </form>
     )
-}
+});
+
+Searchbar.displayName = 'Searchbar';

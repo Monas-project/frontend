@@ -19,7 +19,7 @@ export default function Home() {
   const [rootId, setRootId] = useState('');
   const [rootKey, setRootKey] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { setRoot } = useDataContext();
+  const { setRoot, setCurrentNode } = useDataContext();
   const { setWalletData } = useWalletContext();
 
   const connectWallet = async () => {
@@ -33,54 +33,77 @@ export default function Home() {
     const provider = new ethers.BrowserProvider((window as any).ethereum);
     const signer = await provider.getSigner();
 
-    const message = "Please sign this message to log in.";
-    const signature = await signer.signMessage(message);
+    // const message = "Please sign this message to log in.";
+    // const signature = await signer.signMessage(message);
     const walletAddress = await signer.getAddress();
     setAddress(walletAddress);
     setWalletData({ address: walletAddress });
 
-    const response: any = await signup(walletAddress, signature);
-
-    // const data = await response.json();
-    if (response.access_token) {
-      // Save the JWT for future requests
-      localStorage.setItem("token", response.access_token);
-      console.log("localStorage.getItem", localStorage.getItem("token"))
-      setIsSignedIn(true);
-      // await handleLogin();
+    const response: any = await signup(walletAddress);
+    if (response) {
+      // const rootJson = response.data.root_json;
+      const rootJson = response.find((obj: any) => obj.root_json);
+      const rootCid = response.find((obj: any) => obj.root_cid);
+      console.log("Root Json", rootJson)
+      console.log("Root Cid", rootCid)
     } else {
       // Authentication failed
       console.log("Authentication failed")
     }
+
+    // const response: any = await signup(walletAddress, signature);
+    // if (response.access_token) {
+    //   // Save the JWT for future requests
+    //   localStorage.setItem("token", response.access_token);
+    //   console.log("localStorage.getItem", localStorage.getItem("token"))
+    //   setIsSignedIn(true);
+    //   // await handleLogin();
+    // } else {
+    //   // Authentication failed
+    //   console.log("Authentication failed")
+    // }
+    setIsSignedIn(true);
     setConnecting(false);
   };
 
-
-
-  // const handleInputChange = (event: any) => {
-  //   const { name, value } = event.target;
-  //   if (name === 'rootId') {
-  //     setRootId(value);
-  //   } else if (name === 'rootKey') {
-  //     setRootKey(value);
-  //   }
-  // };
-
   const handleLogin = async (event: any) => {
     event.preventDefault();
-    if (!address) {
-      return;
-    }
+    // if (!address) {
+    //   return;
+    // }
     console.log('rootId:', rootId);
     console.log('rootKey:', rootKey);
 
+    if (typeof (window as any).ethereum === 'undefined') {
+      console.error("Please install MetaMask");
+      setConnecting(false);
+      return;
+    }
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    const signer = await provider.getSigner();
+
+    const message = "Please sign this message to log in.";
+    const signature = await signer.signMessage(message);
+
     try {
       // const data: any = await login(rootId, rootKey);
-      const data: any = await login(address);
+      // const data: any = await login(address);
+      const data: any = await login(address, signature);
+      if (data.access_token) {
+        // Save the JWT for future requests
+        localStorage.setItem("token", data.access_token);
+        console.log("localStorage.getItem", localStorage.getItem("token"))
+        setIsSignedIn(true);
+        // await handleLogin();
+      } else {
+        // Authentication failed
+        console.log("Authentication failed")
+      }
       console.log("data", data);
       console.log("metadata", data.metadata);
-      localStorage.setItem('walletAddree', address)
+      localStorage.setItem('walletAddress', address)
       setRoot(data.metadata);
+      setCurrentNode(data.metadata);
       setIsLoggedIn(true);
       router.push(`/my-box`);
     } catch (error) {

@@ -7,6 +7,7 @@ const ENDPOINT = `${API_URL}/login`;
 // };
 export type loginAPIReq = {
   address: string;
+  signature: string;
 };
 
 export type loginAPIRes = {
@@ -14,9 +15,10 @@ export type loginAPIRes = {
   // error: boolean;
 };
 
-export const login = async (address: string) => {
+export const login = async (address: string, signature: string) => {
   const req: loginAPIReq = {
     "address": address,
+    signature,
   };
   const body = JSON.stringify(req);
   console.log("login body: ", body)

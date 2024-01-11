@@ -11,11 +11,11 @@ export type fetchAPIRes = {
 };
 
 export const fetchAPI = async (path: string) => {
-    const req: fetchAPIReq = {
-        path: path
-      };
+  const req: fetchAPIReq = {
+      path: path
+  };
   
-    const body = JSON.stringify(req);
+  const body = JSON.stringify(req);
   console.log("fetch body: ", body)
   const res = await fetch(ENDPOINT, { method: "POST", headers: {
     'Content-Type': 'application/json'

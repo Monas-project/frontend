@@ -3,7 +3,7 @@ const ENDPOINT = `${API_URL}/signup`;
 
 export type signupAPIReq = {
   address: string;
-  signature: string;
+  // signature: string;
 };
 
 export type signupAPIRes = {
@@ -11,10 +11,10 @@ export type signupAPIRes = {
   // error: boolean;
 };
 
-export const signup = async (address: string, signature: string) => {
+export const signup = async (address: string) => {
   const req: signupAPIReq = {
     address,
-    signature,
+    // signature,
   };
   const body = JSON.stringify(req);
   console.log("ENDPOINT", ENDPOINT);
